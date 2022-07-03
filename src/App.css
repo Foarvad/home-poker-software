@@ -1,0 +1,14 @@
+body {
+  overscroll-behavior: contain;
+  user-select: none;
+  position: relative;
+}
+
+html,
+body {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
