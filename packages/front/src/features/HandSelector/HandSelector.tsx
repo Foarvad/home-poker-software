@@ -1,10 +1,11 @@
 import { styled } from '@stitches/react';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { CardImage } from '../../components/CardImage/CardImage';
 
 import { CardSelector } from '../../components/CardSelector';
 import { ALL_CARD_SUITS_ORDERED_2X2 } from '../../constants';
-import { Hand, PlayingCard, PlayingCardSuit } from '../../types';
+import { useApi } from '../../services/api';
+import { PlayingCard } from '../../types';
 
 const StyledWrapper = styled('div', {
   display: 'flex',
@@ -35,6 +36,8 @@ export const HandSelector: React.FC = () => {
   const [firstCard, setFirstCard] = useState<PlayingCard | null>(null);
   const [secondCard, setSecondCard] = useState<PlayingCard | null>(null);
 
+  const {send} = useApi();
+
   const handleSelectCard = (card: PlayingCard) => {
     if (!firstCard) {
       setFirstCard(card);
@@ -48,6 +51,17 @@ export const HandSelector: React.FC = () => {
   const disabledCards = [firstCard, secondCard].filter((card) => card !== null) as PlayingCard[];
 
   const isCardSelectorsDisabled = Boolean(firstCard && secondCard);
+
+  useEffect(() => {
+    if (firstCard && secondCard) {
+      send({
+        type: 'test',
+        payload: {
+          message: `${firstCard.rank}${firstCard.suit} ${secondCard.rank}${secondCard.suit}`,
+        }
+      })
+    }
+  }, [firstCard, secondCard])
 
   return (
     <StyledWrapper>
