@@ -1,7 +1,10 @@
 import { styled } from '@stitches/react';
+import React, { useCallback, useState } from 'react';
+import { CardImage } from '../../components/CardImage/CardImage';
 
 import { CardSelector } from '../../components/CardSelector';
-import { PlayingCard, PlayingCardSuit } from '../../types';
+import { ALL_CARD_SUITS_ORDERED_2X2 } from '../../constants';
+import { Hand, PlayingCard, PlayingCardSuit } from '../../types';
 
 const StyledWrapper = styled('div', {
   display: 'flex',
@@ -10,21 +13,57 @@ const StyledWrapper = styled('div', {
   flexDirection: 'column',
 });
 
-export const HandSelector = () => {
+const CardSelectorsWrapper = styled('div', {
+  display: 'grid',
+  gridTemplateRows: 'auto auto',
+  gridTemplateColumns: 'auto auto',
+  gap: '4px',
+});
+
+const CardPreview = styled('div', {
+
+})
+
+const CardPreviewWrapper = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  marginBottom: '20px',
+  height: '90px',
+})
+
+export const HandSelector: React.FC = () => {
+  const [firstCard, setFirstCard] = useState<PlayingCard | null>(null);
+  const [secondCard, setSecondCard] = useState<PlayingCard | null>(null);
+
   const handleSelectCard = (card: PlayingCard) => {
-    alert(`${card.rank}${card.suit}`);
-  }
+    if (!firstCard) {
+      setFirstCard(card);
+      return;
+    }
+    if (!secondCard) {
+      setSecondCard(card);
+    }
+  };
+
+  const disabledCards = [firstCard, secondCard].filter((card) => card !== null) as PlayingCard[];
+
+  const isCardSelectorsDisabled = Boolean(firstCard && secondCard);
 
   return (
     <StyledWrapper>
-      <div>
-        <CardSelector suit={PlayingCardSuit.SPADE} onSelect={handleSelectCard} />
-        <CardSelector suit={PlayingCardSuit.HEART} onSelect={handleSelectCard} />
-      </div>
-      <div>
-        <CardSelector suit={PlayingCardSuit.CLUB} onSelect={handleSelectCard} />
-        <CardSelector suit={PlayingCardSuit.DIAMOND} onSelect={handleSelectCard} />
-      </div>
+      <CardPreviewWrapper>
+        <CardPreview onClick={() => setFirstCard(null)}>
+          <CardImage card={firstCard} />
+        </CardPreview>
+        <CardPreview onClick={() => setSecondCard(null)}>
+          <CardImage card={secondCard} />
+        </CardPreview>
+      </CardPreviewWrapper>
+      <CardSelectorsWrapper>
+        {ALL_CARD_SUITS_ORDERED_2X2.map((suit) => (
+          <CardSelector suit={suit} disabled={isCardSelectorsDisabled} onSelect={handleSelectCard} key={suit} disabledCards={disabledCards} />
+        ))}
+      </CardSelectorsWrapper>
     </StyledWrapper>
   )
 };

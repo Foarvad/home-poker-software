@@ -14,6 +14,7 @@ type PieMenuProps<T> = {
   options: PieMenuOption<T>[];
   children: ReactNode;
   centerSymbol?: string;
+  disabled?: boolean;
   onSelect: (value: T) => void;
   onTouchStart?: Function;
   onTouchEnd?: Function;
@@ -92,9 +93,9 @@ const getCoordinatesForPercent = (percent: number) => {
   return [x, y];
 }
 
-export function PieMenu<T>({ opened, options, centerSymbol, children, onSelect, onTouchStart, onTouchEnd }: React.PropsWithChildren<PieMenuProps<T>>) {
+export function PieMenu<T>({ opened, options, centerSymbol, children, disabled, onSelect, onTouchStart, onTouchEnd }: React.PropsWithChildren<PieMenuProps<T>>) {
 
-  const [hoveringElement, setHoveringElement] = useState<T | null>(null);
+  const [currentValue, setCurrentValue] = useState<T | null>(null);
 
   const slicePercent = 1 / options.length;
 
@@ -111,30 +112,23 @@ export function PieMenu<T>({ opened, options, centerSymbol, children, onSelect, 
     const elementValue = overTarget?.getAttribute('data-value') as T | undefined;
 
     if (elementValue) {
-      setHoveringElement(elementValue);
+      setCurrentValue(elementValue);
     } else {
-      setHoveringElement(null);
+      setCurrentValue(null);
     }
   }, 75), []);
 
   const handleTouchEnd = useCallback((e: any) => {
-    const endTarget = document.elementFromPoint(
-      e.changedTouches[0].pageX,
-      e.changedTouches[0].pageY
-    )?.parentElement;
-    const elementValue = endTarget?.getAttribute('data-value') as T | undefined;
-
-    if (elementValue) {
-      setHoveringElement(null);
-      onSelect(elementValue);
+    if (currentValue) {
+      onSelect(currentValue);
     }
     onTouchEnd?.();
-  }, []);
+  }, [onSelect, currentValue, onTouchEnd]);
 
   return (
     <StyledWrapper>
       <ChildrenWrapper onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>{children}</ChildrenWrapper>
-      {opened && (
+      {opened && !disabled && (
         <StyledSvg width={2} height={2} viewBox="-1 -1 2 2">
 
           {/* Invisible placeholder to prevent unwanted behaviour in Safari */}
@@ -163,7 +157,7 @@ export function PieMenu<T>({ opened, options, centerSymbol, children, onSelect, 
               <StyledSliceGroup
                 key={`${option.value}`}
                 data-value={option.value}
-                hover={hoveringElement === option.value}
+                hover={currentValue === option.value}
               >
                 <StyledSlice d={pathData} />
                 <StyledOptionText x={textX} y={textY}>{option.label}</StyledOptionText>

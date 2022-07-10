@@ -6,6 +6,8 @@ import { PieMenu } from "../PieMenu";
 
 type CardSelectorProps = {
   suit: PlayingCardSuit;
+  disabledCards?: PlayingCard[];
+  disabled?: boolean;
   onSelect: (card: PlayingCard) => void;
 }
 
@@ -19,7 +21,7 @@ const cards: PlayingCardRank[] = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '
 
 const cardOptions = cards.map((card) => ({ label: card !== 'T' ? card : '10', value: card }));
 
-export const CardSelector: React.FC<CardSelectorProps> = ({ suit, onSelect }) => {
+export const CardSelector: React.FC<CardSelectorProps> = ({ suit, disabled, disabledCards, onSelect }) => {
   const [isMenuOpened, setMenuOpened] = useState(false);
 
   const handleTouchStart = () => {
@@ -45,11 +47,15 @@ export const CardSelector: React.FC<CardSelectorProps> = ({ suit, onSelect }) =>
       case PlayingCardSuit.DIAMOND:
         return '♦';
     }
-  }, [suit])
+  }, [suit]);
+
+  const disabledRanks = useMemo(() => disabledCards?.filter((card) => card.suit === suit).map((card) => card.rank) || [], [disabledCards, suit]);
+
+  const filteredCardOptions = useMemo(() => cardOptions.filter((card) => !disabledRanks.includes(card.value)), [cardOptions, disabledRanks]);
 
   return (
-    <PieMenu<PlayingCardRank> opened={isMenuOpened} options={cardOptions} centerSymbol={suitSymbol} onSelect={handleSelect} onTouchStart={(handleTouchStart)} onTouchEnd={(handleTouchEnd)}>
-      <StyledButton>{suitSymbol}</StyledButton>
+    <PieMenu<PlayingCardRank> opened={isMenuOpened} options={filteredCardOptions} centerSymbol={suitSymbol} disabled={disabled} onSelect={handleSelect} onTouchStart={(handleTouchStart)} onTouchEnd={(handleTouchEnd)}>
+      <StyledButton disabled={disabled}>{suitSymbol}</StyledButton>
     </PieMenu>
   )
 
