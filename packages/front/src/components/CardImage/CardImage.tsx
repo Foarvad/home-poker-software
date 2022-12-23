@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { PlayingCard, PlayingCardSuit } from "../../types"
-import cards from './cards.svg';
+import React, { useEffect, useState } from "react";
+import { PlayingCard } from "../../types"
 
 type CardImageProps = {
   card?: PlayingCard | null;

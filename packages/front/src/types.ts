@@ -1,15 +1,4 @@
-export enum PlayingCardSuit {
-  SPADE = 's',
-  HEART = 'h',
-  CLUB = 'c',
-  DIAMOND = 'd',
-};
+import { PlayingCardSuit, PlayingCardRank, PlayingCard, HoldemPlayerHand } from 'home-poker-software-api/src/types';
 
-export type PlayingCardRank = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'T' | 'J' | 'Q' | 'K' | 'A';
-
-export type PlayingCard = {
-  rank: PlayingCardRank,
-  suit: PlayingCardSuit,
-};
-
-export type Hand = [PlayingCard, PlayingCard];
+export { PlayingCardSuit };
+export type { PlayingCardRank, PlayingCard, HoldemPlayerHand };

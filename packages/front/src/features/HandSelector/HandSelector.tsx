@@ -1,11 +1,11 @@
 import { styled } from '@stitches/react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CardImage } from '../../components/CardImage/CardImage';
 
 import { CardSelector } from '../../components/CardSelector';
 import { ALL_CARD_SUITS_ORDERED_2X2 } from '../../constants';
 import { useApi } from '../../services/api';
-import { PlayingCard } from '../../types';
+import { HoldemPlayerHand, PlayingCard } from '../../types';
 
 const StyledWrapper = styled('div', {
   display: 'flex',
@@ -54,12 +54,16 @@ export const HandSelector: React.FC = () => {
 
   useEffect(() => {
     if (firstCard && secondCard) {
-      send({
-        type: 'test',
-        payload: {
-          message: `${firstCard.rank}${firstCard.suit} ${secondCard.rank}${secondCard.suit}`,
-        }
-      })
+      const holdemPlayerHand: HoldemPlayerHand = [firstCard, secondCard];
+
+      console.log(holdemPlayerHand);
+
+      // send({
+      //   type: 'test',
+      //   payload: {
+      //     message: `${firstCard.rank}${firstCard.suit} ${secondCard.rank}${secondCard.suit}`,
+      //   }
+      // })
     }
   }, [firstCard, secondCard])
 
