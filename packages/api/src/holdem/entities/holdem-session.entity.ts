@@ -10,8 +10,14 @@ export class HoldemSession {
   @Column()
   name: string;
 
+  @Column({ nullable: true })
+  currentHandNumber: number;
+
   @CreateDateColumn()
-  createdAt: string;
+  createdAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  startedAt: Date;
 
   @OneToMany(() => HoldemHand, hand => hand.session)
   hands: HoldemHand[];
