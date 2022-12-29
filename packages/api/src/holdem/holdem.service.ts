@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -22,6 +22,20 @@ export class HoldemService {
     private readonly playerHandsRepository: Repository<HoldemPlayerHand>,
   ) {}
 
+  // Helpers
+
+  private async findSessionById(sessionId: string) {
+    const session = await this.sessionsRepository.findOneBy({ id: sessionId });
+
+    if (!session) {
+      throw new HttpException('Session is not found', HttpStatus.NOT_FOUND);
+    }
+
+    return session;
+  }
+
+  // Main methods
+
   async createSession(
     createSessionDto: CreateSessionDto,
   ): Promise<HoldemSession> {
@@ -32,11 +46,13 @@ export class HoldemService {
   }
 
   async startSession(sessionId: string) {
-    const session = await this.sessionsRepository.findOneBy({ id: sessionId });
+    const session = await this.findSessionById(sessionId);
 
-    if (!session) {
-      // TODO: Error, session not found
-      return;
+    if (session.currentHandNumber !== null && session.startedAt) {
+      throw new HttpException(
+        'Session is already started',
+        HttpStatus.BAD_REQUEST,
+      );
     }
 
     await this.dataSource.transaction(async (manager) => {
@@ -45,11 +61,40 @@ export class HoldemService {
         session,
         number: 1,
       });
-      await manager.save(hand);
-      // Update existing session
-      await manager.update(HoldemSession, session, {
+
+      // Save first hand
+      await manager.getRepository(HoldemHand).save(hand);
+
+      // Update session
+      await manager.getRepository(HoldemSession).update(session.id, {
         currentHandNumber: 1,
         startedAt: new Date(),
+      });
+    });
+  }
+
+  async nextHand(sessionId: string) {
+    const session = await this.findSessionById(sessionId);
+
+    if (session.currentHandNumber === null || !session.startedAt) {
+      throw new HttpException('Session is not started', HttpStatus.BAD_REQUEST);
+    }
+
+    const nextHandNumber = session.currentHandNumber + 1;
+
+    await this.dataSource.transaction(async (manager) => {
+      // Create next hand
+      const hand = manager.create(HoldemHand, {
+        session,
+        number: nextHandNumber,
+      });
+
+      // Save next hand
+      await manager.getRepository(HoldemHand).save(hand);
+
+      // Update session
+      await manager.getRepository(HoldemSession).update(session.id, {
+        currentHandNumber: nextHandNumber,
       });
     });
   }

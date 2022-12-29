@@ -17,13 +17,13 @@ export class HoldemSession {
   name: string;
 
   @Column({ nullable: true })
-  currentHandNumber: number;
+  currentHandNumber: number | null;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @Column({ type: 'timestamptz', nullable: true })
-  startedAt: Date;
+  startedAt: Date | null;
 
   @OneToMany(() => HoldemHand, (hand) => hand.session)
   hands: HoldemHand[];
