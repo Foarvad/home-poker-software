@@ -25,7 +25,10 @@ export class HoldemService {
   // Helpers
 
   private async findSessionById(sessionId: string) {
-    const session = await this.sessionsRepository.findOneBy({ id: sessionId });
+    const session = await this.sessionsRepository.findOne({
+      relations: { currentHand: true },
+      where: { id: sessionId },
+    });
 
     if (!session) {
       throw new HttpException('Session is not found', HttpStatus.NOT_FOUND);
@@ -48,7 +51,7 @@ export class HoldemService {
   async startSession(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 
-    if (session.currentHandNumber !== null && session.startedAt) {
+    if (session.currentHand !== null && session.startedAt) {
       throw new HttpException(
         'Session is already started',
         HttpStatus.BAD_REQUEST,
@@ -57,17 +60,17 @@ export class HoldemService {
 
     await this.dataSource.transaction(async (manager) => {
       // Create first hand
-      const hand = manager.create(HoldemHand, {
-        session,
+      const firstHand = manager.create(HoldemHand, {
         number: 1,
+        session,
       });
 
       // Save first hand
-      await manager.getRepository(HoldemHand).save(hand);
+      await manager.getRepository(HoldemHand).save(firstHand);
 
       // Update session
       await manager.getRepository(HoldemSession).update(session.id, {
-        currentHandNumber: 1,
+        currentHand: firstHand,
         startedAt: new Date(),
       });
     });
@@ -76,25 +79,25 @@ export class HoldemService {
   async nextHand(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 
-    if (session.currentHandNumber === null || !session.startedAt) {
+    if (session.currentHand === null || !session.startedAt) {
       throw new HttpException('Session is not started', HttpStatus.BAD_REQUEST);
     }
 
-    const nextHandNumber = session.currentHandNumber + 1;
+    const nextHandNumber = session.currentHand.number + 1;
 
     await this.dataSource.transaction(async (manager) => {
-      // Create next hand
-      const hand = manager.create(HoldemHand, {
-        session,
+      // Create new hand
+      const newHand = manager.create(HoldemHand, {
         number: nextHandNumber,
+        session,
       });
 
-      // Save next hand
-      await manager.getRepository(HoldemHand).save(hand);
+      // Save new hand
+      await manager.getRepository(HoldemHand).save(newHand);
 
       // Update session
       await manager.getRepository(HoldemSession).update(session.id, {
-        currentHandNumber: nextHandNumber,
+        currentHand: newHand,
       });
     });
   }

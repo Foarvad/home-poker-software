@@ -16,9 +16,6 @@ export class HoldemSession {
   @Column()
   name: string;
 
-  @Column({ nullable: true })
-  currentHandNumber: number | null;
-
   @CreateDateColumn()
   createdAt: Date;
 
@@ -27,4 +24,7 @@ export class HoldemSession {
 
   @OneToMany(() => HoldemHand, (hand) => hand.session)
   hands: HoldemHand[];
+
+  @Column({ nullable: true })
+  currentHand: HoldemHand | null;
 }
