@@ -29,18 +29,31 @@ export type HoldemPokerHandPlayerData = {
 
 // 52 Card deck
 
-export type PlayingCardRank = '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' | 'T' | 'J' | 'Q' | 'K' | 'A';
+export type PlayingCardRank =
+  | '2'
+  | '3'
+  | '4'
+  | '5'
+  | '6'
+  | '7'
+  | '8'
+  | '9'
+  | 'T'
+  | 'J'
+  | 'Q'
+  | 'K'
+  | 'A';
 
 export enum PlayingCardSuit {
   SPADE = 's',
   HEART = 'h',
   CLUB = 'c',
   DIAMOND = 'd',
-};
+}
 
 export type PlayingCard = {
-  rank: PlayingCardRank,
-  suit: PlayingCardSuit,
+  rank: PlayingCardRank;
+  suit: PlayingCardSuit;
 };
 
 // Card combinations

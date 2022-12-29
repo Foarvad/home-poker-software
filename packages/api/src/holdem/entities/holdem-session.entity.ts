@@ -1,4 +1,10 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { HoldemHand } from './holdem-hand.entity';
 
@@ -19,6 +25,6 @@ export class HoldemSession {
   @Column({ type: 'timestamptz', nullable: true })
   startedAt: Date;
 
-  @OneToMany(() => HoldemHand, hand => hand.session)
+  @OneToMany(() => HoldemHand, (hand) => hand.session)
   hands: HoldemHand[];
 }

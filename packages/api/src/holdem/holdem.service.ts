@@ -20,9 +20,11 @@ export class HoldemService {
     private readonly boardsRepository: Repository<HoldemBoard>,
     @InjectRepository(HoldemPlayerHand)
     private readonly playerHandsRepository: Repository<HoldemPlayerHand>,
-  ) { }
+  ) {}
 
-  async createSession(createSessionDto: CreateSessionDto): Promise<HoldemSession> {
+  async createSession(
+    createSessionDto: CreateSessionDto,
+  ): Promise<HoldemSession> {
     const session = new HoldemSession();
     session.name = createSessionDto.name;
 
@@ -37,15 +39,18 @@ export class HoldemService {
       return;
     }
 
-    await this.dataSource.transaction(async manager => {
+    await this.dataSource.transaction(async (manager) => {
       // Create first hand
       const hand = manager.create(HoldemHand, {
         session,
         number: 1,
-      })
+      });
       await manager.save(hand);
       // Update existing session
-      await manager.update(HoldemSession, session, { currentHandNumber: 1, startedAt: new Date() })
+      await manager.update(HoldemSession, session, {
+        currentHandNumber: 1,
+        startedAt: new Date(),
+      });
     });
   }
 }

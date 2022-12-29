@@ -9,9 +9,14 @@ import { HoldemPlayerHand } from './entities/holdem-player-hand.entity';
 import { HoldemService } from './holdem.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([HoldemSession, HoldemHand, HoldemBoard, HoldemPlayerHand])],
+  imports: [
+    TypeOrmModule.forFeature([
+      HoldemSession,
+      HoldemHand,
+      HoldemBoard,
+      HoldemPlayerHand,
+    ]),
+  ],
   providers: [HoldemService],
 })
-export class HoldemModel {
-
-}
+export class HoldemModel {}
