@@ -94,6 +94,23 @@ export class HoldemService {
     });
   }
 
+  async endSession(sessionId: string) {
+    const session = await this.findSessionById(sessionId);
+
+    if (session.status === HoldemSessionStatus.ENDED) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
+        'Could not end session. Session is already ended.',
+      );
+    }
+
+    await this.sessionsRepository.update(session.id, {
+      currentHand: null,
+      status: HoldemSessionStatus.ENDED,
+      endedAt: new Date(),
+    });
+  }
+
   async nextHand(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 

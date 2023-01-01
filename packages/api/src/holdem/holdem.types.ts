@@ -1,8 +1,8 @@
 export enum HoldemSessionStatus {
-    NOT_STARTED = 'NOT_STARTED',
-    ACTIVE = 'ACTIVE',
-    ENDED = 'ENDED',
-  }
+  NOT_STARTED = 'NOT_STARTED',
+  ACTIVE = 'ACTIVE',
+  ENDED = 'ENDED',
+}
 
 export enum HoldemServiceErrorType {
   SESSION_NOT_FOUND,
