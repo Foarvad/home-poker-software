@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 
@@ -7,6 +7,23 @@ import { HoldemHand } from './entities/holdem-hand.entity';
 import { HoldemBoard } from './entities/holdem-board.entity';
 import { HoldemPlayerHand } from './entities/holdem-player-hand.entity';
 import { CreateSessionDto } from './dto/create-session-dto';
+
+export enum HoldemServiceErrorType {
+  SESSION_NOT_FOUND,
+  SESSION_ALREADY_STARTED,
+  SESSION_NOT_STARTED,
+  PLAYER_HAND_ALREADY_EXISTS,
+}
+
+export class HoldemServiceError extends Error {
+  constructor(type: HoldemServiceErrorType, message: string) {
+    super(message);
+    this.name = 'HoldemServiceError';
+    this.type = type;
+  }
+
+  public type: HoldemServiceErrorType;
+}
 
 @Injectable()
 export class HoldemService {
@@ -31,7 +48,10 @@ export class HoldemService {
     });
 
     if (!session) {
-      throw new HttpException('Session is not found', HttpStatus.NOT_FOUND);
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.SESSION_NOT_FOUND,
+        'Session not found',
+      );
     }
 
     return session;
@@ -52,9 +72,9 @@ export class HoldemService {
     const session = await this.findSessionById(sessionId);
 
     if (session.currentHand !== null && session.startedAt) {
-      throw new HttpException(
-        'Session is already started',
-        HttpStatus.BAD_REQUEST,
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.SESSION_ALREADY_STARTED,
+        'Session already started',
       );
     }
 
@@ -80,7 +100,10 @@ export class HoldemService {
     const session = await this.findSessionById(sessionId);
 
     if (session.currentHand === null || !session.startedAt) {
-      throw new HttpException('Session is not started', HttpStatus.BAD_REQUEST);
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.SESSION_NOT_STARTED,
+        'Session not started',
+      );
     }
 
     const nextHandNumber = session.currentHand.number + 1;
