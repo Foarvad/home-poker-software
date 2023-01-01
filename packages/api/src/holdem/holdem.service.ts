@@ -6,14 +6,9 @@ import { HoldemSession } from './entities/holdem-session.entity';
 import { HoldemHand } from './entities/holdem-hand.entity';
 import { HoldemBoard } from './entities/holdem-board.entity';
 import { HoldemPlayerHand } from './entities/holdem-player-hand.entity';
-import { CreateSessionDto } from './dto/create-session-dto';
-
-export enum HoldemServiceErrorType {
-  SESSION_NOT_FOUND,
-  SESSION_ALREADY_STARTED,
-  SESSION_NOT_STARTED,
-  PLAYER_HAND_ALREADY_EXISTS,
-}
+import { CreateSessionDto } from './dto/create-session.dto';
+import { AddPlayerHandDto } from './dto/add-player-hand.dto';
+import { HoldemServiceErrorType, HoldemSessionStatus } from './holdem.types';
 
 export class HoldemServiceError extends Error {
   constructor(type: HoldemServiceErrorType, message: string) {
@@ -37,7 +32,7 @@ export class HoldemService {
     private readonly boardsRepository: Repository<HoldemBoard>,
     @InjectRepository(HoldemPlayerHand)
     private readonly playerHandsRepository: Repository<HoldemPlayerHand>,
-  ) {}
+  ) { }
 
   // Helpers
 
@@ -50,7 +45,7 @@ export class HoldemService {
     if (!session) {
       throw new HoldemServiceError(
         HoldemServiceErrorType.SESSION_NOT_FOUND,
-        'Session not found',
+        'Session not found.',
       );
     }
 
@@ -62,8 +57,10 @@ export class HoldemService {
   async createSession(
     createSessionDto: CreateSessionDto,
   ): Promise<HoldemSession> {
-    const session = new HoldemSession();
-    session.name = createSessionDto.name;
+    const session = this.sessionsRepository.create({
+      name: createSessionDto.name,
+      status: HoldemSessionStatus.NOT_STARTED,
+    });
 
     return this.sessionsRepository.save(session);
   }
@@ -71,10 +68,10 @@ export class HoldemService {
   async startSession(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 
-    if (session.currentHand !== null && session.startedAt) {
+    if (session.status !== HoldemSessionStatus.NOT_STARTED) {
       throw new HoldemServiceError(
-        HoldemServiceErrorType.SESSION_ALREADY_STARTED,
-        'Session already started',
+        HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
+        'Could not start session. Session is already started or was ended.',
       );
     }
 
@@ -91,6 +88,7 @@ export class HoldemService {
       // Update session
       await manager.getRepository(HoldemSession).update(session.id, {
         currentHand: firstHand,
+        status: HoldemSessionStatus.ACTIVE,
         startedAt: new Date(),
       });
     });
@@ -99,10 +97,17 @@ export class HoldemService {
   async nextHand(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 
-    if (session.currentHand === null || !session.startedAt) {
+    if (session.status !== HoldemSessionStatus.ACTIVE) {
       throw new HoldemServiceError(
-        HoldemServiceErrorType.SESSION_NOT_STARTED,
-        'Session not started',
+        HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
+        'Could not start a new hand. Session is not active.',
+      );
+    }
+
+    if (!session.currentHand) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_ACTIVE_HAND,
+        'Could not start a new hand. Session is active, but current hand is null.',
       );
     }
 
@@ -123,5 +128,39 @@ export class HoldemService {
         currentHand: newHand,
       });
     });
+  }
+
+  async addPlayerHand(sessionId: string, addPlayerHandDto: AddPlayerHandDto) {
+    const session = await this.findSessionById(sessionId);
+    const currentHand = session.currentHand;
+
+    if (!currentHand) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_ACTIVE_HAND,
+        'Could not add player hand. Session has no active hand at the moment.',
+      );
+    }
+
+    const existingPlayerHand = await this.playerHandsRepository.findOne({
+      where: {
+        playerName: addPlayerHandDto.playerName,
+        hand: { id: currentHand.id },
+      },
+    });
+
+    if (existingPlayerHand) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.PLAYER_HAND_ALREADY_EXISTS,
+        `Could not add player hand. This player's hand was already submitted.`,
+      );
+    }
+
+    const playerHand = this.playerHandsRepository.create({
+      playerName: addPlayerHandDto.playerName,
+      playerHand: addPlayerHandDto.playerHand,
+      hand: currentHand,
+    });
+
+    await this.playerHandsRepository.save(playerHand);
   }
 }
