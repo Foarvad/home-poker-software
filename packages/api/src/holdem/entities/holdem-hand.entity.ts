@@ -3,11 +3,9 @@ import {
   Entity,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { HoldemBoard } from './holdem-board.entity';
 import { HoldemPlayerHand } from './holdem-player-hand.entity';
 import { HoldemSession } from './holdem-session.entity';
 
@@ -19,8 +17,14 @@ export class HoldemHand {
   @Column()
   number: number;
 
-  @OneToOne(() => HoldemBoard)
-  board: HoldemBoard;
+  @Column({ nullable: true })
+  flop: string | null; // 5hAsQd
+
+  @Column({ nullable: true })
+  turn: string | null; // Qs
+
+  @Column({ nullable: true })
+  river: string | null; // Jh
 
   @OneToMany(() => HoldemPlayerHand, (playerHand) => playerHand.hand)
   playerHands: HoldemPlayerHand[];

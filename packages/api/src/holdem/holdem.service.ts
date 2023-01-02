@@ -4,7 +4,6 @@ import { DataSource, Repository } from 'typeorm';
 
 import { HoldemSession } from './entities/holdem-session.entity';
 import { HoldemHand } from './entities/holdem-hand.entity';
-import { HoldemBoard } from './entities/holdem-board.entity';
 import { HoldemPlayerHand } from './entities/holdem-player-hand.entity';
 import { CreateSessionDto } from './dto/create-session.dto';
 import { AddPlayerHandDto } from './dto/add-player-hand.dto';
@@ -28,11 +27,9 @@ export class HoldemService {
     private readonly sessionsRepository: Repository<HoldemSession>,
     @InjectRepository(HoldemHand)
     private readonly handsRepository: Repository<HoldemHand>,
-    @InjectRepository(HoldemBoard)
-    private readonly boardsRepository: Repository<HoldemBoard>,
     @InjectRepository(HoldemPlayerHand)
     private readonly playerHandsRepository: Repository<HoldemPlayerHand>,
-  ) { }
+  ) {}
 
   // Helpers
 
@@ -50,6 +47,19 @@ export class HoldemService {
     }
 
     return session;
+  }
+
+  private async findCurrentHandBySessionId(sessionId: string) {
+    const session = await this.findSessionById(sessionId);
+
+    if (!session.currentHand) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_ACTIVE_HAND,
+        'Session has no active hand at the moment.',
+      );
+    }
+
+    return session.currentHand;
   }
 
   // Main methods
@@ -71,7 +81,7 @@ export class HoldemService {
     if (session.status !== HoldemSessionStatus.NOT_STARTED) {
       throw new HoldemServiceError(
         HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
-        'Could not start session. Session is already started or was ended.',
+        'Session is already started or was ended.',
       );
     }
 
@@ -100,7 +110,7 @@ export class HoldemService {
     if (session.status === HoldemSessionStatus.ENDED) {
       throw new HoldemServiceError(
         HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
-        'Could not end session. Session is already ended.',
+        'Session is already ended.',
       );
     }
 
@@ -117,14 +127,14 @@ export class HoldemService {
     if (session.status !== HoldemSessionStatus.ACTIVE) {
       throw new HoldemServiceError(
         HoldemServiceErrorType.INCORRECT_SESSION_STATUS,
-        'Could not start a new hand. Session is not active.',
+        'Session is not active.',
       );
     }
 
     if (!session.currentHand) {
       throw new HoldemServiceError(
         HoldemServiceErrorType.NO_ACTIVE_HAND,
-        'Could not start a new hand. Session is active, but current hand is null.',
+        'Session is active, but current hand is null.',
       );
     }
 
@@ -148,15 +158,7 @@ export class HoldemService {
   }
 
   async addPlayerHand(sessionId: string, addPlayerHandDto: AddPlayerHandDto) {
-    const session = await this.findSessionById(sessionId);
-    const currentHand = session.currentHand;
-
-    if (!currentHand) {
-      throw new HoldemServiceError(
-        HoldemServiceErrorType.NO_ACTIVE_HAND,
-        'Could not add player hand. Session has no active hand at the moment.',
-      );
-    }
+    const currentHand = await this.findCurrentHandBySessionId(sessionId);
 
     const existingPlayerHand = await this.playerHandsRepository.findOne({
       where: {
@@ -179,5 +181,44 @@ export class HoldemService {
     });
 
     await this.playerHandsRepository.save(playerHand);
+  }
+
+  async addFlop(sessionId: string, flop: string) {
+    const currentHand = await this.findCurrentHandBySessionId(sessionId);
+
+    if (flop.length !== 6) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.INVALID_FLOP,
+        'Invalid flop. It should be in "5hAsQd" format (6 chars long).',
+      );
+    }
+
+    await this.handsRepository.update(currentHand.id, { flop });
+  }
+
+  async addTurn(sessionId: string, turn: string) {
+    const currentHand = await this.findCurrentHandBySessionId(sessionId);
+
+    if (turn.length !== 2) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.INVALID_TURN_OR_RIVER,
+        'Invalid turn. It should be in "Qd" format (2 chars long).',
+      );
+    }
+
+    await this.handsRepository.update(currentHand.id, { turn });
+  }
+
+  async addRiver(sessionId: string, river: string) {
+    const currentHand = await this.findCurrentHandBySessionId(sessionId);
+
+    if (river.length !== 2) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.INVALID_TURN_OR_RIVER,
+        'Invalid river. It should be in "Qd" format (2 chars long).',
+      );
+    }
+
+    await this.handsRepository.update(currentHand.id, { river });
   }
 }
