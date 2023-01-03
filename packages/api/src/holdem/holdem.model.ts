@@ -3,20 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { HoldemSession } from './entities/holdem-session.entity';
 import { HoldemHand } from './entities/holdem-hand.entity';
-import { HoldemBoard } from './entities/holdem-board.entity';
 import { HoldemPlayerHand } from './entities/holdem-player-hand.entity';
 
 import { HoldemService } from './holdem.service';
+import { HoldemGateway } from './holdem.gateway';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([
-      HoldemSession,
-      HoldemHand,
-      HoldemBoard,
-      HoldemPlayerHand,
-    ]),
+    TypeOrmModule.forFeature([HoldemSession, HoldemHand, HoldemPlayerHand]),
   ],
-  providers: [HoldemService],
+  providers: [HoldemService, HoldemGateway],
 })
 export class HoldemModel {}
