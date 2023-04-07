@@ -1,7 +1,7 @@
 import { styled } from '@stitches/react';
 import React, { useEffect, useState } from 'react';
-import { CardImage } from '../../components/CardImage/CardImage';
 
+import { CardImage } from '../../components/CardImage/CardImage';
 import { CardSelector } from '../../components/CardSelector';
 import { ALL_CARD_SUITS_ORDERED_2X2 } from '../../constants';
 import { useApi } from '../../services/api';
@@ -9,27 +9,37 @@ import { HoldemPlayerHand, PlayingCard } from '../../types';
 
 const StyledWrapper = styled('div', {
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
   flexDirection: 'column',
+  placeItems: 'center',
+  gap: '32px',
+  width: '35vw',
+  height: '100%',
+  margin: 'auto',
+  backgroundColor: 'DarkRed',
 });
 
 const CardSelectorsWrapper = styled('div', {
   display: 'grid',
-  gridTemplateRows: 'auto auto',
-  gridTemplateColumns: 'auto auto',
-  gap: '4px',
+  gridTemplateColumns: 'calc(50% - 8px) calc(50% - 8px)',
+  gridTemplateRows: '1fr 1fr',
+  gap: '16px',
+  width: '100%',
 });
 
 const CardPreview = styled('div', {
-
+  height: '100%',
+  display: 'flex',
+  flex: 1,
+  alignItems: 'center',
 })
 
 const CardPreviewWrapper = styled('div', {
+  backgroundColor: 'red',
   display: 'flex',
-  justifyContent: 'center',
-  marginBottom: '20px',
-  height: '90px',
+  width: '100%',
+  placeItems: 'center',
+  gap: '4px',
+  height: '40%',
 })
 
 export const HandSelector: React.FC = () => {
@@ -70,7 +80,7 @@ export const HandSelector: React.FC = () => {
   return (
     <StyledWrapper>
       <CardPreviewWrapper>
-        <CardPreview onClick={() => setFirstCard(null)}>
+        <CardPreview style={{justifyContent: 'flex-end'}} onClick={() => setFirstCard(null)}>
           <CardImage card={firstCard} />
         </CardPreview>
         <CardPreview onClick={() => setSecondCard(null)}>

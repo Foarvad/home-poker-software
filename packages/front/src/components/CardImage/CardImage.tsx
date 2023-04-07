@@ -16,5 +16,5 @@ export const CardImage: React.FC<CardImageProps> = ({ card }) => {
     })
   }, [card]);
   
-  return <img height="100%" src={cardUrl} />
+  return <img style={{maxWidth: 'min(100%, 150px)'}} src={cardUrl} />
 }

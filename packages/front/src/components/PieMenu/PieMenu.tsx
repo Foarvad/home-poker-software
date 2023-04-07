@@ -1,7 +1,7 @@
 // Article used: https://medium.com/hackernoon/a-simple-pie-chart-in-svg-dbdd653b6936
 
+import { ReactNode, useCallback, useState, cloneElement, ReactElement } from "react";
 import { styled } from "@stitches/react"
-import { ReactNode, useCallback, useState } from "react";
 import throttle from 'lodash.throttle';
 
 type PieMenuOption<T> = {
@@ -12,7 +12,7 @@ type PieMenuOption<T> = {
 type PieMenuProps<T> = {
   opened: boolean;
   options: PieMenuOption<T>[];
-  children: ReactNode;
+  children: ReactElement;
   centerSymbol?: string;
   disabled?: boolean;
   onSelect: (value: T) => void;
@@ -23,6 +23,8 @@ type PieMenuProps<T> = {
 const StyledWrapper = styled('div', {
   position: "relative",
   display: "inline-flex",
+  width: '100%',
+  height: '100%',
 })
 
 const StyledSvg = styled('svg', {
@@ -127,7 +129,8 @@ export function PieMenu<T>({ opened, options, centerSymbol, children, disabled, 
 
   return (
     <StyledWrapper>
-      <ChildrenWrapper onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>{children}</ChildrenWrapper>
+      {cloneElement(children, {onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd})}
+      {/* <ChildrenWrapper onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>{children}</ChildrenWrapper> */}
       {opened && !disabled && (
         <StyledSvg width={2} height={2} viewBox="-1 -1 2 2">
 

@@ -12,9 +12,10 @@ type CardSelectorProps = {
 }
 
 const StyledButton = styled('button', {
-  width: 'min(15vw, 15vh)',
-  height: 'min(15vw, 15vh)',
+  width: '100%',
+  height: '100%',
   fontSize: '1.5rem',
+  aspectRatio: '1 / 1',
 })
 
 const cards: PlayingCardRank[] = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
