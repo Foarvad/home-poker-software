@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, Not, Repository } from 'typeorm';
 
 import { HoldemSession } from './entities/holdem-session.entity';
 import { HoldemHand } from './entities/holdem-hand.entity';
@@ -63,6 +63,10 @@ export class HoldemService {
   }
 
   // Main methods
+
+  async getSessions(): Promise<HoldemSession[]> {
+    return this.sessionsRepository.findBy({ status: Not(HoldemSessionStatus.ENDED) });
+  }
 
   async createSession(
     createSessionDto: CreateSessionDto,

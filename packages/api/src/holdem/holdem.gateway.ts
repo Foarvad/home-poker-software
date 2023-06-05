@@ -18,6 +18,12 @@ export class HoldemGateway {
 
   constructor(private holdemService: HoldemService) { }
 
+  @SubscribeMessage('getSessions')
+  async getSessions() {
+    const sessions = await this.holdemService.getSessions();
+    this.server.emit('sessions', sessions);
+  }
+
   @SubscribeMessage('createSession')
   async createSession(
     @MessageBody() dto: CreateSessionDto,
@@ -32,7 +38,7 @@ export class HoldemGateway {
   }
 
   @SubscribeMessage('joinSession')
-  async handleJoinSession(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
+  async joinSession(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
     try {
       await client.join(sessionId);
       client.emit('sessionJoined', sessionId);
@@ -42,7 +48,7 @@ export class HoldemGateway {
   }
 
   @SubscribeMessage('leaveSession')
-  async handleLeaveRoom(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
+  async leaveRoom(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
     try {
       await client.leave(sessionId);
       client.emit('sessionLeaved', sessionId);
