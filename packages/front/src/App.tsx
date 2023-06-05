@@ -4,6 +4,7 @@ import { HandSelector } from './features/HandSelector';
 
 import './App.css'
 import { useEffect, useRef } from 'react';
+import { SessionListPage } from './pages/SessionListPage';
 
 const StyledWrapper = styled('div', {
   display: 'flex',
@@ -50,17 +51,18 @@ function App() {
   }, []);
 
   return (
-    <StyledWrapper ref={wrapperRef}>
-      <StyledHeader>
-        Hand 22
-      </StyledHeader>
-      <StyledMain>
-        <HandSelector />
-      </StyledMain>
-      <StyledFooter>
+    <SessionListPage />
+    // <StyledWrapper ref={wrapperRef}>
+    //   <StyledHeader>
+    //     Hand 22
+    //   </StyledHeader>
+    //   <StyledMain>
+    //     <HandSelector />
+    //   </StyledMain>
+    //   <StyledFooter>
 
-      </StyledFooter>
-    </StyledWrapper>
+    //   </StyledFooter>
+    // </StyledWrapper>
   )
 }
 
