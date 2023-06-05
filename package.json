@@ -2,11 +2,18 @@
   "name": "root",
   "private": true,
   "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/node": "^20.2.5",
+    "commander": "^10.0.1",
     "lerna": "^5.1.8",
-    "nx": "^14.4.2"
+    "nx": "^14.4.2",
+    "ts-node": "^10.9.1"
   },
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna build"
+    "build": "lerna build",
+    "generate-file-contents": "npm run generate-api-file-contents & npm run generate-front-file-contents",
+    "generate-api-file-contents": "ts-node generateFileContents.ts -d /packages/api/src -o /generated/api-text-representation.txt",
+    "generate-front-file-contents": "ts-node generateFileContents.ts -d /packages/front/src -o /generated/front-text-representation.txt -i .svg, .css"
   }
 }

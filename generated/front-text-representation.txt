@@ -1,0 +1,605 @@
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\App.css
+
+body {
+  overscroll-behavior: contain;
+  user-select: none;
+  position: relative;
+}
+
+html,
+body {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\App.tsx
+
+import { styled } from '@stitches/react';
+
+import { HandSelector } from './features/HandSelector';
+
+import './App.css'
+import { useEffect, useRef } from 'react';
+
+const StyledWrapper = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '32px',
+})
+
+const StyledHeader = styled('header', {
+  height: '25vh',
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: '3rem',
+  backgroundColor: 'green',
+})
+
+const StyledMain = styled('main', {
+  flexGrow: 1,
+  backgroundColor: 'purple',
+})
+
+const StyledFooter = styled('footer', {
+  height: '15vh',
+  backgroundColor: 'black',
+})
+
+function App() {
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  const setWindowHeight = () => {
+    if (wrapperRef.current){
+      wrapperRef.current.style.height = `${window.innerHeight}px`;
+    }
+  }
+
+  // Set page height to current inner height using JS (because IOS toolbar overflows content if we set height to 100vh)
+  useEffect(() => {
+    setWindowHeight();
+
+    addEventListener('resize', setWindowHeight);
+    return () => {
+      removeEventListener('resize', setWindowHeight);
+    }
+  }, []);
+
+  return (
+    <StyledWrapper ref={wrapperRef}>
+      <StyledHeader>
+        Hand 22
+      </StyledHeader>
+      <StyledMain>
+        <HandSelector />
+      </StyledMain>
+      <StyledFooter>
+
+      </StyledFooter>
+    </StyledWrapper>
+  )
+}
+
+export default App
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\constants.ts
+
+import { PlayingCardSuit } from "./types";
+
+// https://www.deceptionary.com/aboutsuits.html
+
+export const ALL_CARD_SUITS_ORDERED_SHOCKED = [PlayingCardSuit.SPADE, PlayingCardSuit.HEART, PlayingCardSuit.CLUB, PlayingCardSuit.DIAMOND];
+export const ALL_CARD_SUITS_ORDERED_2X2 = [PlayingCardSuit.SPADE, PlayingCardSuit.HEART, PlayingCardSuit.DIAMOND, PlayingCardSuit.CLUB];
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\index.css
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\main.tsx
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+
+import App from './App'
+import './index.css'
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+)
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\types.ts
+
+import { PlayingCardSuit, PlayingCardRank, PlayingCard, HoldemPlayerHand } from 'home-poker-software-api/src/types';
+
+export { PlayingCardSuit };
+export type { PlayingCardRank, PlayingCard, HoldemPlayerHand };
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\vite-env.d.ts
+
+/// <reference types="vite/client" />
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\features\HandSelector\HandSelector.tsx
+
+import { styled } from '@stitches/react';
+import React, { useEffect, useState } from 'react';
+
+import { CardImage } from '../../components/CardImage/CardImage';
+import { CardSelector } from '../../components/CardSelector';
+import { ALL_CARD_SUITS_ORDERED_2X2 } from '../../constants';
+import { useApi } from '../../services/api';
+import { HoldemPlayerHand, PlayingCard } from '../../types';
+
+const StyledWrapper = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  placeItems: 'center',
+  gap: '32px',
+  width: '35vw',
+  height: '100%',
+  margin: 'auto',
+  backgroundColor: 'DarkRed',
+});
+
+const CardSelectorsWrapper = styled('div', {
+  display: 'grid',
+  gridTemplateColumns: 'calc(50% - 8px) calc(50% - 8px)',
+  gridTemplateRows: '1fr 1fr',
+  gap: '16px',
+  width: '100%',
+});
+
+const CardPreview = styled('div', {
+  height: '100%',
+  display: 'flex',
+  flex: 1,
+  alignItems: 'center',
+})
+
+const CardPreviewWrapper = styled('div', {
+  backgroundColor: 'red',
+  display: 'flex',
+  width: '100%',
+  placeItems: 'center',
+  gap: '4px',
+  height: '40%',
+})
+
+export const HandSelector: React.FC = () => {
+  const [firstCard, setFirstCard] = useState<PlayingCard | null>(null);
+  const [secondCard, setSecondCard] = useState<PlayingCard | null>(null);
+
+  const {send} = useApi();
+
+  const handleSelectCard = (card: PlayingCard) => {
+    if (!firstCard) {
+      setFirstCard(card);
+      return;
+    }
+    if (!secondCard) {
+      setSecondCard(card);
+    }
+  };
+
+  const disabledCards = [firstCard, secondCard].filter((card) => card !== null) as PlayingCard[];
+
+  const isCardSelectorsDisabled = Boolean(firstCard && secondCard);
+
+  useEffect(() => {
+    if (firstCard && secondCard) {
+      const holdemPlayerHand: HoldemPlayerHand = [firstCard, secondCard];
+
+      console.log(holdemPlayerHand);
+
+      // send({
+      //   type: 'test',
+      //   payload: {
+      //     message: `${firstCard.rank}${firstCard.suit} ${secondCard.rank}${secondCard.suit}`,
+      //   }
+      // })
+    }
+  }, [firstCard, secondCard])
+
+  return (
+    <StyledWrapper>
+      <CardPreviewWrapper>
+        <CardPreview style={{justifyContent: 'flex-end'}} onClick={() => setFirstCard(null)}>
+          <CardImage card={firstCard} />
+        </CardPreview>
+        <CardPreview onClick={() => setSecondCard(null)}>
+          <CardImage card={secondCard} />
+        </CardPreview>
+      </CardPreviewWrapper>
+      <CardSelectorsWrapper>
+        {ALL_CARD_SUITS_ORDERED_2X2.map((suit) => (
+          <CardSelector suit={suit} disabled={isCardSelectorsDisabled} onSelect={handleSelectCard} key={suit} disabledCards={disabledCards} />
+        ))}
+      </CardSelectorsWrapper>
+    </StyledWrapper>
+  )
+};
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\features\HandSelector\index.ts
+
+export * from './HandSelector';
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\services\api\index.ts
+
+export * from './api.service';
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\services\api\api.service.ts
+
+const ws = new WebSocket("ws://localhost:9801");
+
+// Temporary types
+
+type ApiMessage = {
+  type: 'test',
+  payload: {
+    message: string;
+  }
+}
+
+export const useApi = () => {
+  const send = (message: ApiMessage) => {
+    ws.send(JSON.stringify(message));
+  }
+
+  return { send }
+}
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\components\CardSelector\CardSelector.tsx
+
+import { styled } from "@stitches/react"
+import { useMemo, useState } from "react";
+import { PlayingCardRank, PlayingCardSuit, PlayingCard } from "../../types";
+import { PieMenu } from "../PieMenu";
+
+
+type CardSelectorProps = {
+  suit: PlayingCardSuit;
+  disabledCards?: PlayingCard[];
+  disabled?: boolean;
+  onSelect: (card: PlayingCard) => void;
+}
+
+const StyledButton = styled('button', {
+  width: '100%',
+  height: '100%',
+  fontSize: '1.5rem',
+  aspectRatio: '1 / 1',
+})
+
+const cards: PlayingCardRank[] = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
+
+const cardOptions = cards.map((card) => ({ label: card !== 'T' ? card : '10', value: card }));
+
+export const CardSelector: React.FC<CardSelectorProps> = ({ suit, disabled, disabledCards, onSelect }) => {
+  const [isMenuOpened, setMenuOpened] = useState(false);
+
+  const handleTouchStart = () => {
+    setMenuOpened(true);
+  }
+
+  const handleTouchEnd = () => {
+    setMenuOpened(false);
+  }
+
+  const handleSelect = (rank: PlayingCardRank) => {
+    onSelect({ rank, suit });
+  }
+
+  const suitSymbol = useMemo(() => {
+    switch (suit) {
+      case PlayingCardSuit.SPADE:
+        return '♠';
+      case PlayingCardSuit.HEART:
+        return '♥';
+      case PlayingCardSuit.CLUB:
+        return '♣';
+      case PlayingCardSuit.DIAMOND:
+        return '♦';
+    }
+  }, [suit]);
+
+  const disabledRanks = useMemo(() => disabledCards?.filter((card) => card.suit === suit).map((card) => card.rank) || [], [disabledCards, suit]);
+
+  const filteredCardOptions = useMemo(() => cardOptions.filter((card) => !disabledRanks.includes(card.value)), [cardOptions, disabledRanks]);
+
+  return (
+    <PieMenu<PlayingCardRank> opened={isMenuOpened} options={filteredCardOptions} centerSymbol={suitSymbol} disabled={disabled} onSelect={handleSelect} onTouchStart={(handleTouchStart)} onTouchEnd={(handleTouchEnd)}>
+      <StyledButton disabled={disabled}>{suitSymbol}</StyledButton>
+    </PieMenu>
+  )
+
+}
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\components\CardSelector\index.ts
+
+export * from './CardSelector';
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\components\PieMenu\index.ts
+
+export * from './PieMenu';
+
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\components\PieMenu\PieMenu.tsx
+
+// Article used: https://medium.com/hackernoon/a-simple-pie-chart-in-svg-dbdd653b6936
+
+import { ReactNode, useCallback, useState, cloneElement, ReactElement } from "react";
+import { styled } from "@stitches/react"
+import throttle from 'lodash.throttle';
+
+type PieMenuOption<T> = {
+  label: string;
+  value: T;
+}
+
+type PieMenuProps<T> = {
+  opened: boolean;
+  options: PieMenuOption<T>[];
+  children: ReactElement;
+  centerSymbol?: string;
+  disabled?: boolean;
+  onSelect: (value: T) => void;
+  onTouchStart?: Function;
+  onTouchEnd?: Function;
+}
+
+const StyledWrapper = styled('div', {
+  position: "relative",
+  display: "inline-flex",
+  width: '100%',
+  height: '100%',
+})
+
+const StyledSvg = styled('svg', {
+  width: 'min(80vw, 50vh)',
+  height: 'min(80vw, 50vh)',
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  zIndex: 1,
+})
+
+const StyledSlice = styled('path', {
+  transition: 'all .5s ease',
+  fill: "grey",
+  stroke: 'white',
+  strokeWidth: '.01',
+})
+
+const StyledOptionText = styled('text', {
+  fill: "white",
+  fontSize: '0.23px',
+  fontWeight: 500,
+  dominantBaseline: "middle",
+  textAnchor: "middle",
+})
+
+const StyledSliceGroup = styled('g', {
+  // '&:hover, &:active': {
+  //     [`${StyledSlice}`]: {
+  //         fill: 'black',
+  //     }
+  // },
+  variants: {
+    hover: {
+      true: {
+        [`${StyledSlice}`]: {
+          fill: 'black',
+        }
+      }
+    }
+  }
+})
+
+const StyledCenterCircle = styled('circle', {
+  stroke: "white",
+  strokeWidth: 0.01,
+});
+
+const StyledCenterSymbol = styled('text', {
+  fontSize: '0.2px',
+  fill: "white",
+  dominantBaseline: "middle",
+  textAnchor: "middle",
+  // For Safari
+  pointerEvents: "none",
+})
+
+const ChildrenWrapper = styled('div', {
+
+});
+
+const getCoordinatesForPercent = (percent: number) => {
+  const precision = 2;
+  const rotationOffset = -0.25; // Start drawing from the top instead of right
+  const x = +Math.cos(2 * Math.PI * (percent + rotationOffset)).toFixed(precision);
+  const y = +Math.sin(2 * Math.PI * (percent + rotationOffset)).toFixed(precision);
+  return [x, y];
+}
+
+export function PieMenu<T>({ opened, options, centerSymbol, children, disabled, onSelect, onTouchStart, onTouchEnd }: React.PropsWithChildren<PieMenuProps<T>>) {
+
+  const [currentValue, setCurrentValue] = useState<T | null>(null);
+
+  const slicePercent = 1 / options.length;
+
+  const handleTouchStart = useCallback((e: any) => {
+    onTouchStart?.();
+  }, []);
+
+  const handleTouchMove = useCallback(throttle((e) => {
+    const overTarget = document.elementFromPoint(
+      e.changedTouches[0].pageX,
+      e.changedTouches[0].pageY
+    )?.parentElement;
+
+    const elementValue = overTarget?.getAttribute('data-value') as T | undefined;
+
+    if (elementValue) {
+      setCurrentValue(elementValue);
+    } else {
+      setCurrentValue(null);
+    }
+  }, 75), []);
+
+  const handleTouchEnd = useCallback((e: any) => {
+    if (currentValue) {
+      onSelect(currentValue);
+    }
+    onTouchEnd?.();
+  }, [onSelect, currentValue, onTouchEnd]);
+
+  return (
+    <StyledWrapper>
+      {cloneElement(children, {onTouchStart: handleTouchStart, onTouchMove: handleTouchMove, onTouchEnd: handleTouchEnd})}
+      {/* <ChildrenWrapper onTouchStart={handleTouchStart} onTouchMove={handleTouchMove} onTouchEnd={handleTouchEnd}>{children}</ChildrenWrapper> */}
+      {opened && !disabled && (
+        <StyledSvg width={2} height={2} viewBox="-1 -1 2 2">
+
+          {/* Invisible placeholder to prevent unwanted behaviour in Safari */}
+          <rect x={-1} y={-1} width={2} height={2} fillOpacity={0}></rect>
+
+          {options.map((option, i) => {
+            let startPercent = slicePercent * i;
+            let endPercent = slicePercent * (i + 1);
+
+            const [startX, startY] = getCoordinatesForPercent(startPercent);
+            const [endX, endY] = getCoordinatesForPercent(endPercent);
+
+            // if the slice is more than 50%, take the large arc (the long way around)
+            const largeArcFlag = slicePercent > .5 ? 1 : 0;
+
+            const pathData = [
+              `M ${startX} ${startY}`, // Move
+              `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`, // Arc
+              `L 0 0`, // Line
+            ].join(' ');
+
+            // TODO: add unified presicion for this component
+            const [textX, textY] = [(endX + startX) / 2.5, (endY + startY) / 2.5];
+
+            return (
+              <StyledSliceGroup
+                key={`${option.value}`}
+                data-value={option.value}
+                hover={currentValue === option.value}
+              >
+                <StyledSlice d={pathData} />
+                <StyledOptionText x={textX} y={textY}>{option.label}</StyledOptionText>
+              </StyledSliceGroup>
+            )
+          })}
+          <g>
+            <StyledCenterCircle r={0.2} />
+            <StyledCenterSymbol y={0.02}>{centerSymbol}</StyledCenterSymbol>
+          </g>
+        </StyledSvg>
+      )
+      }
+    </StyledWrapper >
+  )
+
+}
+
+====================
+
+
+File: C:\Users\Foarvad\Projects\home-poker-software\packages\front\src\components\CardImage\CardImage.tsx
+
+import React, { useEffect, useState } from "react";
+import { PlayingCard } from "../../types"
+
+type CardImageProps = {
+  card?: PlayingCard | null;
+}
+
+export const CardImage: React.FC<CardImageProps> = ({ card }) => {
+  const cardName = card ? `${card.rank}${card.suit}` : 'back_red';
+
+  const [cardUrl, setCardUrl] = useState<string>();
+
+  useEffect(() => {
+    import(`./cards/${cardName}.svg`).then((res) => {
+      setCardUrl(res.default);
+    })
+  }, [card]);
+  
+  return <img style={{maxWidth: 'min(100%, 150px)'}} src={cardUrl} />
+}
+
+====================
+
