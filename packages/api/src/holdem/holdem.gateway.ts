@@ -24,6 +24,16 @@ export class HoldemGateway {
     this.server.emit('sessions', sessions);
   }
 
+  @SubscribeMessage('getSessionById')
+  async getSessionById(client: Socket, { sessionId }: { sessionId: string }) {
+    try {
+      const session = await this.holdemService.getSessionById(sessionId);
+      client.emit('session', session);
+    } catch (error) {
+      client.emit('error', error.message);
+    }
+  }
+
   @SubscribeMessage('createSession')
   async createSession(
     @MessageBody() dto: CreateSessionDto,

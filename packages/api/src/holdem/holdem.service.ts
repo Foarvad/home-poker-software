@@ -35,7 +35,7 @@ export class HoldemService {
 
   private async findSessionById(sessionId: string) {
     const session = await this.sessionsRepository.findOne({
-      relations: { currentHand: true },
+      relations: ['currentHand', 'currentHand.playerHands'],
       where: { id: sessionId },
     });
 
@@ -66,6 +66,10 @@ export class HoldemService {
 
   async getSessions(): Promise<HoldemSession[]> {
     return this.sessionsRepository.findBy({ status: Not(HoldemSessionStatus.ENDED) });
+  }
+
+  async getSessionById(sessionId: string): Promise<HoldemSession> {
+    return this.findSessionById(sessionId);
   }
 
   async createSession(
