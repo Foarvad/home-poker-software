@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { useSocket } from '../providers/SocketProvider';
 import { Layout, Header, Main } from '../components/Layout';
 import { styled } from '../stitches.config';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '../components/Button';
 
 interface Session {
   id: string;
@@ -18,8 +20,8 @@ const SessionList = styled('ul', {
 
 const SessionListItem = styled('li', {
   backgroundColor: '$background',
-  marginBottom: '$7',
-  padding: '$7',
+  marginBottom: '24px',
+  padding: '24px',
   borderRadius: '8px',
   boxShadow: '$card',
   display: 'flex',
@@ -39,35 +41,11 @@ const SessionListItem = styled('li', {
   },
 });
 
-const JoinButton = styled('button', {
-  backgroundColor: '$buttonBg',
-  color: '$buttonText',
-  padding: '$4 $7',
-  borderRadius: '8px',
-  boxShadow: '$button',
-  border: 'none',
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: '#0056b3',
-  },
-  '&:active': {
-    backgroundColor: '#004085',
-  },
-  '@media $mobile': {
-    marginTop: '$4',
-    alignSelf: 'flex-end',
-  },
-  '@media $tablet': {
-    marginTop: '0',
-    alignSelf: 'center',
-  },
-  '@media $desktop': {
-    marginTop: '0',
-    alignSelf: 'center',
-  },
-});
 
-export function SessionListPage () {
+
+export const SessionListPage: React.FC = () => {
+  const navigate = useNavigate();
+
   const [sessions, setSessions] = useState<Session[]>([
     {id: 'uuid1', name: 'Friday night', status: 'ACTIVE'},
     {id: 'uuid2', name: 'Sunday night', status: 'NOT_STARTED'}
@@ -86,12 +64,13 @@ export function SessionListPage () {
   // }, [socket]);
 
   const handleJoin = (sessionId: string) => {
+    navigate(`/session/${sessionId}`);
     // socket.emit('joinSession', { sessionId });
   };
 
   return (
     <Layout>
-      <Header>Poker Sessions</Header>
+      <Header>Home Poker Software</Header>
       <Main>
         <SessionList>
           {sessions.map(session => (
@@ -100,7 +79,7 @@ export function SessionListPage () {
               <h2>Session: {session.name}</h2>
               <p>Status: {session.status}</p>
             </div>
-            <JoinButton onClick={() => handleJoin(session.id)}>Join</JoinButton>
+            <Button onClick={() => handleJoin(session.id)}>Join</Button>
           </SessionListItem>
           ))}
         </SessionList>

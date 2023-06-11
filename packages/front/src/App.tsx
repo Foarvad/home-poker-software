@@ -1,37 +1,10 @@
-import { styled } from '@stitches/react';
-
-import { HandSelector } from './features/HandSelector';
-
 import './App.css'
 import { useEffect, useRef } from 'react';
 import { SessionListPage } from './pages/SessionListPage';
+import { SessionPage } from './pages/SessionPage';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 
-const StyledWrapper = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: '32px',
-})
-
-const StyledHeader = styled('header', {
-  height: '25vh',
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  fontSize: '3rem',
-  backgroundColor: 'green',
-})
-
-const StyledMain = styled('main', {
-  flexGrow: 1,
-  backgroundColor: 'purple',
-})
-
-const StyledFooter = styled('footer', {
-  height: '15vh',
-  backgroundColor: 'black',
-})
-
-function App() {
+export const App: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const setWindowHeight = () => {
@@ -51,19 +24,12 @@ function App() {
   }, []);
 
   return (
-    <SessionListPage />
-    // <StyledWrapper ref={wrapperRef}>
-    //   <StyledHeader>
-    //     Hand 22
-    //   </StyledHeader>
-    //   <StyledMain>
-    //     <HandSelector />
-    //   </StyledMain>
-    //   <StyledFooter>
-
-    //   </StyledFooter>
-    // </StyledWrapper>
+    <Router>
+      <Routes>
+        <Route path="/sessions" element={<SessionListPage />} />
+        <Route path="/session/:sessionId" element={<SessionPage />} />
+        <Route path="*" element={<Navigate to="/sessions" replace />} />
+      </Routes>
+    </Router>
   )
 }
-
-export default App
