@@ -6,13 +6,6 @@ export const Layout = styled('div', {
   minHeight: '100vh',
   backgroundColor: '#F5F5F5',
   fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif',
-  padding: '4px',
-  '@tablet': {
-    padding: '6px',
-  },
-  '@desktop': {
-    padding: '8px',
-  },
 });
 
 export const Header = styled('header', {
