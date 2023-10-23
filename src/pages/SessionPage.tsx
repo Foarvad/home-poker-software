@@ -1,36 +1,8 @@
-import { Layout, Header, Main } from '../components/Layout';
-import { EnterUsername } from '../features/EnterUsername';
-import { styled } from '../stitches.config';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 
-const JoinButton = styled('button', {
-  backgroundColor: '$buttonBg',
-  color: '$buttonText',
-  fontSize: '24px',
-  padding: '8px 24px',
-  borderRadius: '8px',
-  boxShadow: '$button',
-  border: 'none',
-  cursor: 'pointer',
-  '&:hover': {
-    backgroundColor: '#0056b3',
-  },
-  '&:active': {
-    backgroundColor: '#004085',
-  },
-  '@media $mobile': {
-    marginTop: '8px',
-    alignSelf: 'flex-end',
-  },
-  '@media $tablet': {
-    marginTop: '0',
-    alignSelf: 'center',
-  },
-  '@media $desktop': {
-    marginTop: '0',
-    alignSelf: 'center',
-  },
-});
+import { Layout, Header, Main } from '../components/Layout';
+import { EnterUsername } from '../features/EnterUsername';
 
 type SessionPageContentProps = {
   sessionId?: string;
@@ -39,16 +11,15 @@ type SessionPageContentProps = {
 const SessionPageContent: React.FC<SessionPageContentProps> = ({sessionId}) => {
   const usernameLocalStorageKey = `username-${sessionId}`;
 
-  const username = localStorage.getItem(usernameLocalStorageKey);
+  const [username, setUsername] = useState(localStorage.getItem(usernameLocalStorageKey));
 
-  const setUsername = (username: string) => {
+  const handleSetUsername = (username: string) => {
+    setUsername(username);
     localStorage.setItem(usernameLocalStorageKey, username);
   }
 
-  // use routing because localstorage does not cause rerender
-
   if (!username) {
-    return <EnterUsername setUsername={setUsername} />
+    return <EnterUsername setUsername={handleSetUsername} />
   }
 
   return <>Welcome {username}!</>
