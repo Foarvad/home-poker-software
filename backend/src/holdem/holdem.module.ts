@@ -14,4 +14,4 @@ import { HoldemGateway } from './holdem.gateway';
   ],
   providers: [HoldemService, HoldemGateway],
 })
-export class HoldemModel {}
+export class HoldemModule {}

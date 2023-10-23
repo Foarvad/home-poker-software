@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -15,10 +16,10 @@ export class HoldemSession {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   name: string;
 
-  @Column({ type: 'enum', default: HoldemSessionStatus.NOT_STARTED })
+  @Column({ type: 'enum', enum: HoldemSessionStatus, default: HoldemSessionStatus.NOT_STARTED })
   status: HoldemSessionStatus;
 
   @CreateDateColumn()
@@ -33,6 +34,7 @@ export class HoldemSession {
   @OneToMany(() => HoldemHand, (hand) => hand.session)
   hands: HoldemHand[];
 
-  @Column({ nullable: true })
+  // Надо подумать нужна ли эта колонка
+  @OneToOne(() => HoldemHand)
   currentHand: HoldemHand | null;
 }

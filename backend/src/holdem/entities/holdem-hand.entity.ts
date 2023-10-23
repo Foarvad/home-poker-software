@@ -14,16 +14,16 @@ export class HoldemHand {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'smallint' })
   number: number;
 
-  @Column({ nullable: true })
+  @Column({ type: 'char', length: 6, nullable: true })
   flop: string | null; // 5hAsQd
 
-  @Column({ nullable: true })
+  @Column({ type: 'char', length: 2, nullable: true })
   turn: string | null; // Qs
 
-  @Column({ nullable: true })
+  @Column({ type: 'char', length: 2, nullable: true })
   river: string | null; // Jh
 
   @OneToMany(() => HoldemPlayerHand, (playerHand) => playerHand.hand)

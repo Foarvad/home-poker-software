@@ -7,10 +7,10 @@ export class HoldemPlayerHand {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'text' })
   playerName: string;
 
-  @Column()
+  @Column({ type: 'char', length: 4 })
   playerHand: string; // 5hAs
 
   @ManyToOne(() => HoldemHand)
