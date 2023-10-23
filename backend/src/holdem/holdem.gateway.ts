@@ -100,7 +100,7 @@ export class HoldemGateway {
   ) {
     try {
       await this.holdemService.nextHand(sessionId);
-      // Notifying clients that are in this session
+      // Notifying players that are in this session
       this.server.to(sessionId).emit('nextHandStarted', sessionId);
     } catch (error) {
       client.emit('error', error.message);
@@ -114,7 +114,7 @@ export class HoldemGateway {
   ) {
     try {
       await this.holdemService.addPlayerHand(sessionId, hand);
-      // Notifying clients that are in this session
+      // Notifying players that are in this session
       this.server.to(sessionId).emit('playerHandAdded', { sessionId, playerName: hand.playerName });
     } catch (error) {
       client.emit('error', error.message);
@@ -128,7 +128,7 @@ export class HoldemGateway {
   ) {
     try {
       await this.holdemService.addFlop(sessionId, flop);
-      // Notifying clients that are in this session
+      // Notifying players that are in this session
       this.server.to(sessionId).emit('flopAdded', { sessionId, flop });
     } catch (error) {
       client.emit('error', error.message);
@@ -142,7 +142,7 @@ export class HoldemGateway {
   ) {
     try {
       await this.holdemService.addTurn(sessionId, turn);
-      // Notifying clients that are in this session
+      // Notifying players that are in this session
       this.server.to(sessionId).emit('turnAdded', { sessionId, turn });
     } catch (error) {
       client.emit('error', error.message);
@@ -153,7 +153,7 @@ export class HoldemGateway {
   async addRiver(@MessageBody() { sessionId, river }: { sessionId: string; river: string }) {
     try {
       await this.holdemService.addRiver(sessionId, river);
-      // Notifying clients that are in this session
+      // Notifying players that are in this session
       this.server.to(sessionId).emit('riverAdded', { sessionId, river });
     } catch (error) {
       this.server.emit('error', error.message);

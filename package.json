@@ -1,19 +1,34 @@
 {
-  "name": "root",
+  "name": "home-poker-software-front",
   "private": true,
-  "devDependencies": {
-    "@types/commander": "^2.12.2",
-    "@types/node": "^20.2.5",
-    "commander": "^10.0.1",
-    "lerna": "^5.1.8",
-    "nx": "^14.4.2",
-    "ts-node": "^10.9.1"
-  },
+  "version": "0.0.1",
   "scripts": {
-    "bootstrap": "lerna bootstrap",
-    "build": "lerna build",
-    "generate-file-contents": "npm run generate-api-file-contents & npm run generate-front-file-contents",
-    "generate-api-file-contents": "ts-node generateFileContents.ts -d /packages/api/src -o /generated/api-text-representation.txt",
-    "generate-front-file-contents": "ts-node generateFileContents.ts -d /packages/front/src -o /generated/front-text-representation.txt -i .svg, .css"
+    "dev": "vite",
+    "devHost": "vite --host",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "type-check": "tsc"
+  },
+  "browserslist": [
+    "defaults"
+  ],
+  "dependencies": {
+    "@stitches/react": "^1.2.8",
+    "lodash.debounce": "^4.0.8",
+    "lodash.throttle": "^4.1.1",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.12.1",
+    "socket.io-client": "^4.6.2"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "^4.0.7",
+    "@types/lodash.throttle": "^4.1.7",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@vitejs/plugin-react": "^1.3.0",
+    "autoprefixer": "^10.4.7",
+    "typescript": "^4.6.3",
+    "vite": "^2.9.9"
   }
 }

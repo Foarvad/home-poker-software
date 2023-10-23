@@ -14,6 +14,7 @@ const Wrapper = styled('div', {
 });
 
 export const EnterUsername: React.FC<EnterUsernameProps> = ({setUsername}) => {
+  // recentUsername is used to prefill name field
   const recentUsername = localStorage.getItem('recentUsername');
 
   const [username, setUsernameState] = useState(recentUsername ?? '');

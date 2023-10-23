@@ -1,14 +1,16 @@
-import './App.css'
 import { useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
 import { SessionListPage } from './pages/SessionListPage';
 import { SessionPage } from './pages/SessionPage';
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+import './App.css'
 
 export const App: React.FC = () => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const setWindowHeight = () => {
-    if (wrapperRef.current){
+    if (wrapperRef.current) {
       wrapperRef.current.style.height = `${window.innerHeight}px`;
     }
   }
