@@ -10,10 +10,14 @@ export const Layout = styled('div', {
 
 export const Header = styled('header', {
   backgroundColor: '#FFFFFF',
-  padding: '24px',
+  padding: '0 24px',
+  height: '100px',
   borderBottom: '1px solid #E0E0E0',
   fontSize: '24px',
   fontWeight: 'bold',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
 });
 
 export const Main = styled('main', {
@@ -22,5 +26,6 @@ export const Main = styled('main', {
   justifyContent: 'center',
   alignItems: 'center',
   padding: '24px',
+  gap: '16px',
   flex: 1,
 });

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-d
 
 import { SessionListPage } from './pages/SessionListPage';
 import { SessionPage } from './pages/SessionPage';
+import { CreateSessionPage } from './pages/CreateSessionPage';
 
 import './App.css'
 
@@ -29,7 +30,8 @@ export const App: React.FC = () => {
     <Router>
       <Routes>
         <Route path="/sessions" element={<SessionListPage />} />
-        <Route path="/session/:sessionId" element={<SessionPage />} />
+        <Route path="/sessions/create" element={<CreateSessionPage />} />
+        <Route path="/sessions/:sessionId" element={<SessionPage />} />
         <Route path="*" element={<Navigate to="/sessions" replace />} />
       </Routes>
     </Router>

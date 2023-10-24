@@ -4,6 +4,7 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -12,11 +13,15 @@ import { CreateSessionDto } from './dto/create-session.dto';
 import { AddPlayerHandDto } from './dto/add-player-hand.dto';
 
 @WebSocketGateway({ namespace: '/holdem', cors: { origin: '*' } })
-export class HoldemGateway {
+export class HoldemGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
 
   constructor(private holdemService: HoldemService) { }
+
+  handleConnection(client: Socket) {
+    console.log('Client connected!');
+  }
 
   @SubscribeMessage('getSessions')
   async getSessions() {
@@ -42,6 +47,9 @@ export class HoldemGateway {
     try {
       const session = await this.holdemService.createSession(dto);
       this.server.emit('sessionCreated', session);
+
+      const sessions = await this.holdemService.getSessions();
+      this.server.emit('sessions', sessions);
     } catch (error) {
       client.emit('error', error.message);
     }

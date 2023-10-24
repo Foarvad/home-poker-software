@@ -5,10 +5,16 @@ export type User = {
 
 // Poker session
 
+export enum HoldemSessionStatus {
+  NOT_STARTED = 'NOT_STARTED',
+  ACTIVE = 'ACTIVE',
+  ENDED = 'ENDED',
+}
+
 export type HoldemPokerSession = {
   id: string;
   name: string;
-  players: User[];
+  status: HoldemSessionStatus;
   hands: HoldemPokerHand[];
 };
 

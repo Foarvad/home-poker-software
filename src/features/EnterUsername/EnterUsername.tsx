@@ -1,33 +1,33 @@
 import { useState } from "react";
-import { styled } from "../../stitches.config";
+
 import { Button } from "../../components/Button";
+import { Main } from "../../components/Layout";
 
 type EnterUsernameProps = {
   setUsername: (username: string) => void;
-}
+};
 
-const Wrapper = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  placeItems: 'center',
-  gap: '16px',
-});
-
-export const EnterUsername: React.FC<EnterUsernameProps> = ({setUsername}) => {
+export const EnterUsername: React.FC<EnterUsernameProps> = ({
+  setUsername,
+}) => {
   // recentUsername is used to prefill name field
-  const recentUsername = localStorage.getItem('recentUsername');
+  const recentUsername = localStorage.getItem("recentUsername");
 
-  const [username, setUsernameState] = useState(recentUsername ?? '');
+  const [username, setUsernameState] = useState(recentUsername ?? "");
 
-  const handleSubmit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUsernameState(e.target.value);
-    localStorage.setItem('recentUsername', e.target.value);
-  }
+  const handleSubmit = () => {
+    localStorage.setItem("recentUsername", username);
+    setUsername(username);
+  };
 
   return (
-    <Wrapper>
-      <input type="text" value={username} onChange={handleSubmit}></input>
-      <Button onClick={() => setUsername(username)}>Join session</Button>
-    </Wrapper>
-  )
-}
+    <Main>
+      <input
+        type="text"
+        value={username}
+        onChange={(e) => setUsernameState(e.target.value)}
+      ></input>
+      <Button onClick={handleSubmit}>Join session</Button>
+    </Main>
+  );
+};
