@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 import { HoldemModule } from './holdem/holdem.module';
 
@@ -14,6 +15,8 @@ import { HoldemModule } from './holdem/holdem.module';
       database: 'poker',
       autoLoadEntities: true,
       synchronize: true,
+      // We declare entities with camelCase and it will be automatically transformed to snake_case for the database
+      namingStrategy: new SnakeNamingStrategy(),
     }),
     HoldemModule,
   ],

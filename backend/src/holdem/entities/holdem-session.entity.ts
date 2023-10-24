@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -22,6 +23,10 @@ export class HoldemSession {
   @Column({ type: 'enum', enum: HoldemSessionStatus, default: HoldemSessionStatus.NOT_STARTED })
   status: HoldemSessionStatus;
 
+  @OneToOne(() => HoldemHand, { nullable: true })
+  @JoinColumn()
+  currentHand: HoldemHand | null;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -33,8 +38,4 @@ export class HoldemSession {
 
   @OneToMany(() => HoldemHand, (hand) => hand.session)
   hands: HoldemHand[];
-
-  // Надо подумать нужна ли эта колонка
-  @OneToOne(() => HoldemHand)
-  currentHand: HoldemHand | null;
 }
