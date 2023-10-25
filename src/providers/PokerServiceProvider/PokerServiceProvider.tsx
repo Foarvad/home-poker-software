@@ -11,7 +11,6 @@ import { HoldemPokerSession } from "../../types";
 
 interface PokerServiceContextValue {
   socket: Socket;
-  pokerSessions: HoldemPokerSession[] | null;
 }
 
 const PokerServiceContext = createContext<PokerServiceContextValue | null>(null);
@@ -26,10 +25,8 @@ export const PokerServiceProvider: React.FC<PokerServiceProviderProps> = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setConnected] = useState(false);
 
-  const [pokerSessions, setPokerSessions] = useState<HoldemPokerSession[] | null>(null);
-
   useEffect(() => {
-    const newSocket = io("http://127.0.0.1:8100/holdem");
+    const newSocket = io(`http://${window.location.hostname}:8100/holdem`);
     setSocket(newSocket);
     
     newSocket.on('connect', () => {
@@ -40,10 +37,6 @@ export const PokerServiceProvider: React.FC<PokerServiceProviderProps> = ({
     newSocket.on('disconnect', () => {
       setConnected(false);
       console.log('Connected!');
-    })
-
-    newSocket.on('sessions', (data) => {
-      setPokerSessions(data);
     })
 
     return () => {
@@ -57,7 +50,7 @@ export const PokerServiceProvider: React.FC<PokerServiceProviderProps> = ({
   }
 
   return (
-    <PokerServiceContext.Provider value={{ socket, pokerSessions }}>
+    <PokerServiceContext.Provider value={{ socket }}>
       {children}
     </PokerServiceContext.Provider>
   );

@@ -1,9 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import { Layout, Header, Main } from "../components/Layout";
 import { styled } from "../stitches.config";
-import { useNavigate } from "react-router-dom";
 import { Button } from "../components/Button";
 import { usePokerService } from "../providers/PokerServiceProvider";
+import { HoldemPokerSession } from "../types";
 
 interface Session {
   id: string;
@@ -41,13 +43,25 @@ const SessionListItem = styled("li", {
   },
 });
 
+type PokerSessionBase = Omit<HoldemPokerSession, 'hands'>;
+
 export const SessionListPage: React.FC = () => {
   const navigate = useNavigate();
 
-  const { socket, pokerSessions } = usePokerService();
+  const { socket } = usePokerService();
+
+  const [pokerSessions, setPokerSessions] = useState<PokerSessionBase[] | null>(null);
 
   useEffect(() => {
     socket.emit('getSessions');
+
+    socket.on('sessions', (sessions: PokerSessionBase[]) => {
+      setPokerSessions(sessions);
+    })
+
+    return () => {
+      socket.removeAllListeners('sessions');
+    }
   }, [socket]);
 
   const handleJoinSession = (sessionId: string) => {

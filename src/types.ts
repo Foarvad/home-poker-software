@@ -15,22 +15,27 @@ export type HoldemPokerSession = {
   id: string;
   name: string;
   status: HoldemSessionStatus;
+  currentHand: HoldemPokerHand | null;
   hands: HoldemPokerHand[];
 };
 
 // One hand from the game (with board and player hands info)
 
 export type HoldemPokerHand = {
+  id: string;
   number: number;
-  board: HoldemBoard;
-  playersData: HoldemPokerHandPlayerData[];
+  flop: string;
+  turn: string;
+  river: string;
+  playerHands: HoldemPlayerHand[];
 };
 
 // Player info in specific poker hand
 
-export type HoldemPokerHandPlayerData = {
-  player: User;
-  hand: HoldemPlayerHand;
+export type HoldemPlayerHand = {
+  id: string;
+  playerName: string;
+  playerHand: string;
 };
 
 // 52 Card deck
@@ -69,5 +74,3 @@ export type HoldemBoard = {
   turn: PlayingCard;
   river: PlayingCard;
 };
-
-export type HoldemPlayerHand = [PlayingCard, PlayingCard];
