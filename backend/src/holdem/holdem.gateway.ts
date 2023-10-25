@@ -19,6 +19,18 @@ export class HoldemGateway implements OnGatewayConnection {
 
   constructor(private holdemService: HoldemService) { }
 
+  private async broadcastSession(sessionId: string, groups: ('managers' | 'players')[]) {
+    const session = await this.holdemService.getSessionById(sessionId);
+
+    if (groups.includes('players')) {
+      this.server.to(sessionId).emit('session', session);
+    }
+
+    if (groups.includes('managers')) {
+      this.server.to(`${sessionId}-manager`).emit('session', session);
+    }
+  }
+
   handleConnection(client: Socket) {
     console.log('Client connected!');
   }
@@ -45,20 +57,22 @@ export class HoldemGateway implements OnGatewayConnection {
     @ConnectedSocket() client: Socket,
   ) {
     try {
-      const session = await this.holdemService.createSession(dto);
-      this.server.emit('sessionCreated', session);
+      await this.holdemService.createSession(dto);
 
       const sessions = await this.holdemService.getSessions();
       this.server.emit('sessions', sessions);
+
+      return 'Session created';
     } catch (error) {
       client.emit('error', error.message);
     }
   }
 
   @SubscribeMessage('joinSessionAsManager')
-  async joinSessionAsManager(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
+  async joinSessionAsManager(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
     try {
       await client.join(`${sessionId}-manager`);
+
       return 'Joined session as manager';
     } catch (error) {
       client.emit('error', error.message);
@@ -66,9 +80,10 @@ export class HoldemGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('joinSession')
-  async joinSession(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
+  async joinSession(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
     try {
       await client.join(sessionId);
+
       return 'Joined session';
     } catch (error) {
       client.emit('error', error.message);
@@ -76,9 +91,10 @@ export class HoldemGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('leaveSession')
-  async leaveRoom(@ConnectedSocket() client: Socket, { sessionId }: { sessionId: string }) {
+  async leaveRoom(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
     try {
       await client.leave(sessionId);
+
       return 'Session leaved';
     } catch (error) {
       client.emit('error', error.message);
@@ -92,6 +108,9 @@ export class HoldemGateway implements OnGatewayConnection {
   ) {
     try {
       await this.holdemService.startSession(sessionId);
+
+      await this.broadcastSession(sessionId, ['players', 'managers']);
+
       return 'Session started';
     } catch (error) {
       client.emit('error', error.message);
@@ -105,6 +124,9 @@ export class HoldemGateway implements OnGatewayConnection {
   ) {
     try {
       await this.holdemService.endSession(sessionId);
+
+      await this.broadcastSession(sessionId, ['players', 'managers']);
+
       return 'Session ended';
     } catch (error) {
       client.emit('error', error.message);
@@ -119,11 +141,8 @@ export class HoldemGateway implements OnGatewayConnection {
     try {
       await this.holdemService.nextHand(sessionId);
 
-      const session = await this.holdemService.getSessionById(sessionId);
-      // Sending updated session to all players in a session
-      this.server.to(sessionId).emit('session', session);
-      // Notifying all session managers
-      this.server.to(`${sessionId}-manager`).emit('session', session);
+      await this.broadcastSession(sessionId, ['players', 'managers']);
+
       return 'Next hand started';
     } catch (error) {
       client.emit('error', error.message);
@@ -138,9 +157,8 @@ export class HoldemGateway implements OnGatewayConnection {
     try {
       await this.holdemService.addPlayerHand(sessionId, hand);
 
-      const session = await this.holdemService.getSessionById(sessionId);
-      // Notifying all session managers
-      this.server.to(`${sessionId}-manager`).emit('session', session);
+      await this.broadcastSession(sessionId, ['managers']);
+
       return 'Player hand added';
     } catch (error) {
       client.emit('error', error.message);
@@ -154,8 +172,10 @@ export class HoldemGateway implements OnGatewayConnection {
   ) {
     try {
       await this.holdemService.addFlop(sessionId, flop);
-      // Notifying players that are in this session
-      this.server.to(sessionId).emit('flopAdded', { sessionId, flop });
+
+      await this.broadcastSession(sessionId, ['managers']);
+
+      return 'Flop added'
     } catch (error) {
       client.emit('error', error.message);
     }
@@ -168,8 +188,10 @@ export class HoldemGateway implements OnGatewayConnection {
   ) {
     try {
       await this.holdemService.addTurn(sessionId, turn);
-      // Notifying players that are in this session
-      this.server.to(sessionId).emit('turnAdded', { sessionId, turn });
+
+      await this.broadcastSession(sessionId, ['managers']);
+
+      return 'Turn added'
     } catch (error) {
       client.emit('error', error.message);
     }
@@ -179,8 +201,10 @@ export class HoldemGateway implements OnGatewayConnection {
   async addRiver(@MessageBody() { sessionId, river }: { sessionId: string; river: string }) {
     try {
       await this.holdemService.addRiver(sessionId, river);
-      // Notifying players that are in this session
-      this.server.to(sessionId).emit('riverAdded', { sessionId, river });
+
+      await this.broadcastSession(sessionId, ['managers']);
+
+      return 'River added';
     } catch (error) {
       this.server.emit('error', error.message);
     }

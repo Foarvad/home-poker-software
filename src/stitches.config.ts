@@ -3,12 +3,10 @@ import { createStitches } from '@stitches/react';
 export const { styled, css, globalCss, keyframes, theme, config } = createStitches({
   theme: {
     colors: {
-      primary: '#0070f3',
+      primary: '#007BFF',
       secondary: '#1a202c',
       background: '#f7fafc',
       text: '#2d3748',
-      buttonBg: '#007BFF',
-      buttonText: '#FFFFFF',
     },
     shadows: {
       card: '0px 1px 3px 0px rgba(0, 0, 0, 0.2)',

@@ -66,7 +66,6 @@ export const SessionListPage: React.FC = () => {
 
   const handleJoinSession = (sessionId: string) => {
     navigate(`/sessions/${sessionId}`);
-    // socket.emit('joinSession', { sessionId });
   };
 
   const handleCreateSession = () => {

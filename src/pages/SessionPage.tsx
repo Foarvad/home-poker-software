@@ -33,7 +33,7 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
     return () => {
       socket.removeAllListeners("session");
     };
-  }, [socket]);
+  }, [socket, sessionId]);
 
   const handleSetUsername = (username: string) => {
     setUsername(username);
