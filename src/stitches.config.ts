@@ -6,7 +6,7 @@ export const { styled, css, globalCss, keyframes, theme, config } = createStitch
       primary: '#007BFF',
       secondary: '#1a202c',
       background: '#f7fafc',
-      text: '#2d3748',
+      text: '#343a40',
     },
     shadows: {
       card: '0px 1px 3px 0px rgba(0, 0, 0, 0.2)',

@@ -7,12 +7,6 @@ import { Button } from "../components/Button";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession } from "../types";
 
-interface Session {
-  id: string;
-  name: string;
-  status: string;
-}
-
 const SessionList = styled("ul", {
   listStyleType: "none",
   padding: 0,
@@ -28,40 +22,31 @@ const SessionListItem = styled("li", {
   boxShadow: "$card",
   display: "flex",
   justifyContent: "space-between",
+  gap: "16px",
   alignItems: "center",
-  "@media $mobile": {
-    flexDirection: "column",
-    alignItems: "flex-start",
-  },
-  "@media $tablet": {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  "@media $desktop": {
-    flexDirection: "row",
-    alignItems: "center",
-  },
 });
 
-type PokerSessionBase = Omit<HoldemPokerSession, 'hands'>;
+type PokerSessionBase = Omit<HoldemPokerSession, "hands">;
 
 export const SessionListPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { socket } = usePokerService();
 
-  const [pokerSessions, setPokerSessions] = useState<PokerSessionBase[] | null>(null);
+  const [pokerSessions, setPokerSessions] = useState<PokerSessionBase[] | null>(
+    null
+  );
 
   useEffect(() => {
-    socket.emit('getSessions');
+    socket.emit("getSessions");
 
-    socket.on('sessions', (sessions: PokerSessionBase[]) => {
+    socket.on("sessions", (sessions: PokerSessionBase[]) => {
       setPokerSessions(sessions);
-    })
+    });
 
     return () => {
-      socket.removeAllListeners('sessions');
-    }
+      socket.removeAllListeners("sessions");
+    };
   }, [socket]);
 
   const handleJoinSession = (sessionId: string) => {
@@ -75,20 +60,16 @@ export const SessionListPage: React.FC = () => {
   return (
     <Layout>
       <Header>
-        <div>Home Poker Software</div>
-        <div>
-          <Button onClick={handleCreateSession}>Create session</Button>
-        </div>
+        <Button onClick={handleCreateSession}>Create session</Button>
       </Header>
       <Main>
         <SessionList>
-          {pokerSessions?.map((session) => (
-            <SessionListItem key={session.id}>
+          {pokerSessions?.map((pokerSession) => (
+            <SessionListItem key={pokerSession.id}>
               <div>
-                <h2>Session: {session.name}</h2>
-                <p>Status: {session.status}</p>
+                <h2>Session: {pokerSession.name}</h2>
               </div>
-              <Button onClick={() => handleJoinSession(session.id)}>
+              <Button onClick={() => handleJoinSession(pokerSession.id)}>
                 Join
               </Button>
             </SessionListItem>

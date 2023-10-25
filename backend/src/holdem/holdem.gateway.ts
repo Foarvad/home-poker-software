@@ -19,7 +19,7 @@ export class HoldemGateway implements OnGatewayConnection {
 
   constructor(private holdemService: HoldemService) { }
 
-  private async broadcastSession(sessionId: string, groups: ('managers' | 'players')[]) {
+  private async broadcastSession(sessionId: string, groups: ('managers' | 'players')[], clientSocket?: Socket) {
     const session = await this.holdemService.getSessionById(sessionId);
 
     if (groups.includes('players')) {
@@ -28,6 +28,10 @@ export class HoldemGateway implements OnGatewayConnection {
 
     if (groups.includes('managers')) {
       this.server.to(`${sessionId}-manager`).emit('session', session);
+    }
+
+    if (clientSocket) {
+      clientSocket.emit('session', session);
     }
   }
 
@@ -157,7 +161,8 @@ export class HoldemGateway implements OnGatewayConnection {
     try {
       await this.holdemService.addPlayerHand(sessionId, hand);
 
-      await this.broadcastSession(sessionId, ['managers']);
+      // We are also notifying client itself here in order to update session page state
+      await this.broadcastSession(sessionId, ['managers'], client);
 
       return 'Player hand added';
     } catch (error) {

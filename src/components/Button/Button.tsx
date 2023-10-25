@@ -31,24 +31,17 @@ export const Button = styled('button', {
         },
       },
     },
+    fullWidth: {
+      true: {
+        width: '100%',
+      }
+    }
   },
   '&:hover': {
     backgroundColor: '#0056b3',
   },
   '&:active': {
     backgroundColor: '#004085',
-  },
-  '@media $mobile': {
-    marginTop: '8px',
-    alignSelf: 'flex-end',
-  },
-  '@media $tablet': {
-    marginTop: '0',
-    alignSelf: 'center',
-  },
-  '@media $desktop': {
-    marginTop: '0',
-    alignSelf: 'center',
   },
   '&[disabled]': {
     backgroundColor: '#c0c0c0',

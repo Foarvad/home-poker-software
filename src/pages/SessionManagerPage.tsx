@@ -11,17 +11,23 @@ import { SessionStatus } from "../components/SessionStatus";
 const ManagerLayout = styled("div", {
   display: "grid",
   gridTemplateColumns: "repeat(2, 1fr)",
-  gridGap: "64px",
+  gridColumnGap: "32px",
+  gridRowGap: "24px",
 });
 
 const ManagerItem = styled("div", {
   display: "flex",
   flexDirection: "column",
   gap: "12px",
+  padding: "16px",
 });
 
 const NextHandButton = styled(Button, {
   height: "100%",
+});
+
+const SessionStatusWrapper = styled("div", {
+  marginBottom: "24px",
 });
 
 export const SessionManagerPage: React.FC = () => {
@@ -77,14 +83,34 @@ export const SessionManagerPage: React.FC = () => {
     socket.emit("endSession", { sessionId });
   };
 
+  const renderPlayerHands = (pokerSession: HoldemPokerSession) => {
+    if (!pokerSession.currentHand) {
+      return "No active hand at the moment";
+    }
+
+    if (!pokerSession.currentHand.playerHands.length) {
+      return "Waiting for players to add their hands";
+    }
+
+    return pokerSession.currentHand.playerHands
+      .map((playerHand) => playerHand.playerName)
+      .join(", ");
+  };
+
   return (
     <Layout>
-      <Header>Home Poker Software</Header>
+      <Header />
       <Main>
         {pokerSession ? (
           <>
-            <SessionStatus pokerSession={pokerSession} />
+            <SessionStatusWrapper>
+              <SessionStatus pokerSession={pokerSession} />
+            </SessionStatusWrapper>
             <ManagerLayout>
+              <ManagerItem style={{ gridColumn: "span 2" }}>
+                <div>Player hands:</div>
+                <div>{renderPlayerHands(pokerSession)}</div>
+              </ManagerItem>
               <ManagerItem>
                 <NextHandButton
                   variant="positive"

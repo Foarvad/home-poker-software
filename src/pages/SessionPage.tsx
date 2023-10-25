@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import { Layout, Header, Main } from "../components/Layout";
+import { SessionStatus } from "../components/SessionStatus";
 import { EnterUsername } from "../features/EnterUsername";
+import { HandSelector } from "../features/HandSelector";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession } from "../types";
 
 type SessionPageContentProps = {
-  sessionId?: string;
+  sessionId: string;
 };
 
 const SessionPageContent: React.FC<SessionPageContentProps> = ({
@@ -25,6 +27,7 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
 
   useEffect(() => {
     socket.emit("getSession", { sessionId });
+    socket.emit("joinSession", { sessionId });
 
     socket.on("session", (session: HoldemPokerSession) => {
       setPokerSession(session);
@@ -40,6 +43,13 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
     localStorage.setItem(usernameLocalStorageKey, username);
   };
 
+  const handleSubmitHand = (hand: string) => {
+    socket.emit("addPlayerHand", {
+      sessionId,
+      hand: { playerName: username, playerHand: hand },
+    });
+  };
+
   if (!username) {
     return <EnterUsername setUsername={handleSetUsername} />;
   }
@@ -49,14 +59,18 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
     return <>Loading...</>;
   }
 
+  if (
+    pokerSession.currentHand &&
+    !pokerSession.currentHand.playerHands
+      .map(({ playerName }) => playerName)
+      .includes(username)
+  ) {
+    return <HandSelector handSize={2} onSelect={handleSubmitHand} />;
+  }
+
   return (
     <>
-      <div>Welcome {username}!</div>
-      <div>
-        {pokerSession.currentHand
-          ? `Hand ${pokerSession.currentHand.number}`
-          : "No active hand at the moment"}
-      </div>
+      <SessionStatus pokerSession={pokerSession} />
     </>
   );
 };
@@ -66,9 +80,13 @@ export const SessionPage: React.FC = () => {
 
   return (
     <Layout>
-      <Header>Home Poker Software</Header>
+      <Header />
       <Main>
-        <SessionPageContent sessionId={sessionId} />
+        {sessionId ? (
+          <SessionPageContent sessionId={sessionId} />
+        ) : (
+          "Session id is not provided"
+        )}
       </Main>
     </Layout>
   );

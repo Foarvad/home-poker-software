@@ -8,7 +8,6 @@ type SessionStatusProps = {
 
 const Wrapper = styled("div", {
   fontSize: "48px",
-  marginBottom: "64px",
 });
 
 const renderSessionStatus = (pokerSession: HoldemPokerSession) => {

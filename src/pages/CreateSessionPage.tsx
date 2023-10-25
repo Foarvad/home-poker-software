@@ -21,7 +21,7 @@ export const CreateSessionPage: React.FC = () => {
 
   return (
     <Layout>
-      <Header>New session</Header>
+      <Header />
       <Main>
         <input
           type="text"
