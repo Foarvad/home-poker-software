@@ -4,6 +4,13 @@ const Wrapper = styled("div", {
   display: "flex",
   flexDirection: "column",
   gap: "16px",
+  variants: {
+    fullWidth: {
+      true: {
+        width: '100%',
+      }
+    }
+  },
 });
 
 export const StyledTextInput = styled("input", {
@@ -12,6 +19,7 @@ export const StyledTextInput = styled("input", {
   borderRadius: "8px",
   padding: "12px",
   fontSize: "16px",
+  width: '100%',
   "&:focus": {
     outline: "none",
     borderColor: "#007BFF",
@@ -25,11 +33,12 @@ export const StyledTextInput = styled("input", {
 
 type TextInputProps = {
   label?: string;
+  fullWidth?: boolean;
 } & React.InputHTMLAttributes<HTMLInputElement>;
 
-export const TextInput: React.FC<TextInputProps> = ({ label, ...props }) => {
+export const TextInput: React.FC<TextInputProps> = ({ label, fullWidth, ...props }) => {
   return (
-    <Wrapper>
+    <Wrapper fullWidth={fullWidth}>
       {label ? <label>{label}</label> : null}
       <StyledTextInput {...props} />
     </Wrapper>

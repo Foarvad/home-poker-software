@@ -22,7 +22,7 @@ const SessionListItem = styled("li", {
   boxShadow: "$card",
   display: "flex",
   justifyContent: "space-between",
-  gap: "16px",
+  gap: "24px",
   alignItems: "center",
 });
 

@@ -10,6 +10,7 @@ import { SessionListPage } from "./pages/SessionListPage";
 import { SessionPage } from "./pages/SessionPage";
 import { CreateSessionPage } from "./pages/CreateSessionPage";
 import { SessionManagerPage } from "./pages/SessionManagerPage";
+import { SessionQrPage } from "./pages/SessionQrPage";
 
 import { globalCss } from "./stitches.config";
 import "./App.css";
@@ -47,6 +48,7 @@ export const App: React.FC = () => {
         <Route path="/sessions" element={<SessionListPage />} />
         <Route path="/sessions/create" element={<CreateSessionPage />} />
         <Route path="/sessions/:sessionId" element={<SessionPage />} />
+        <Route path="/sessions/:sessionId/qr" element={<SessionQrPage />} />
         <Route
           path="/sessions/:sessionId/manage"
           element={<SessionManagerPage />}

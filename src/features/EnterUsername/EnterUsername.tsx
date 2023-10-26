@@ -28,8 +28,11 @@ export const EnterUsername: React.FC<EnterUsernameProps> = ({
         type="text"
         value={username}
         onChange={(e) => setUsernameState(e.target.value)}
+        fullWidth
       ></TextInput>
-      <Button onClick={handleSubmit}>Join session</Button>
+      <Button onClick={handleSubmit} fullWidth>
+        Join session
+      </Button>
     </CenterWrapper>
   );
 };

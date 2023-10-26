@@ -28,6 +28,7 @@ export const Main = styled("main", {
 export const CenterWrapper = styled('div', {
   display: 'flex',
   flexDirection: 'column',
+  alignItems: 'center',
   gap: '16px',
 
   '@desktop': {

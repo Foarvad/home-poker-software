@@ -7,6 +7,7 @@
     "devHost": "vite --host",
     "build": "tsc && vite build",
     "preview": "vite preview",
+    "previewHost": "vite preview --host",
     "type-check": "tsc"
   },
   "browserslist": [
@@ -18,6 +19,7 @@
     "lodash.throttle": "^4.1.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-qr-code": "^2.0.12",
     "react-router-dom": "^6.12.1",
     "socket.io-client": "^4.6.2"
   },

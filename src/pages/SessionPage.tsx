@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import { Layout, Header, Main } from "../components/Layout";
+import { Layout, Header, Main, CenterWrapper } from "../components/Layout";
 import { SessionStatus } from "../components/SessionStatus";
 import { EnterUsername } from "../features/EnterUsername";
 import { HandSelector } from "../features/HandSelector";
@@ -69,9 +69,10 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
   }
 
   return (
-    <>
+    <CenterWrapper>
       <SessionStatus pokerSession={pokerSession} />
-    </>
+      Blinds: 150/300
+    </CenterWrapper>
   );
 };
 

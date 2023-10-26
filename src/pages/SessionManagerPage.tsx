@@ -100,7 +100,11 @@ export const SessionManagerPage: React.FC = () => {
 
   return (
     <Layout>
-      <Header />
+      <Header>
+        <Button onClick={() => navigate(`/sessions/${sessionId}/qr`)}>
+          Show QR
+        </Button>
+      </Header>
       <Main>
         {pokerSession ? (
           <>

@@ -30,8 +30,9 @@ export const CreateSessionPage: React.FC = () => {
             type="text"
             value={sessionName}
             onChange={(e) => setSessionName(e.target.value)}
+            fullWidth
           ></TextInput>
-          <Button onClick={handleSubmit} disabled={!sessionName}>
+          <Button onClick={handleSubmit} disabled={!sessionName} fullWidth>
             Create session
           </Button>
         </CenterWrapper>
