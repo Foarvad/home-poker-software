@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Layout, Header, Main } from "../components/Layout";
@@ -37,6 +37,11 @@ export const SessionListPage: React.FC = () => {
     null
   );
 
+  const sortedPokerSessions = useMemo(
+    () => (pokerSessions ? [...pokerSessions].reverse() : null),
+    [pokerSessions]
+  );
+
   useEffect(() => {
     socket.emit("getSessions");
 
@@ -64,7 +69,7 @@ export const SessionListPage: React.FC = () => {
       </Header>
       <Main>
         <SessionList>
-          {pokerSessions?.map((pokerSession) => (
+          {sortedPokerSessions?.map((pokerSession) => (
             <SessionListItem key={pokerSession.id}>
               <div>
                 <h2>Session: {pokerSession.name}</h2>

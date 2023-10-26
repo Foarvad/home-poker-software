@@ -25,6 +25,22 @@ export const Main = styled("main", {
   },
 });
 
+export const CenterWrapper = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: '16px',
+
+  '@desktop': {
+    width: '250px',
+  },
+  '@tablet': {
+    width: '250px',
+  },
+  '@mobile': {
+    width: '100%',
+  }
+});
+
 const StyledHeader = styled("header", {
   backgroundColor: "#FFFFFF",
   padding: "0 24px",
@@ -44,7 +60,7 @@ const StyledLink = styled(Link, {
   height: '100%',
   display: 'flex',
   alignItems: 'center',
-})
+});
 
 type HeaderProps = {
   title?: string;

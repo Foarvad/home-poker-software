@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { styled } from "../stitches.config";
 import { Layout, Header, Main } from "../components/Layout";
 import { Button } from "../components/Button";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession, HoldemSessionStatus } from "../types";
-import { styled } from "../stitches.config";
 import { SessionStatus } from "../components/SessionStatus";
+import { TextInput } from "../components/TextInput";
 
 const ManagerLayout = styled("div", {
   display: "grid",
@@ -121,7 +122,7 @@ export const SessionManagerPage: React.FC = () => {
                 </NextHandButton>
               </ManagerItem>
               <ManagerItem>
-                <input
+                <TextInput
                   type="text"
                   value={pokerSession.currentHand?.flop ?? flop}
                   onChange={(e) => setFlop(e.target.value)}
@@ -131,7 +132,7 @@ export const SessionManagerPage: React.FC = () => {
                     !pokerSession.currentHand ||
                     !!pokerSession.currentHand?.flop
                   }
-                ></input>
+                ></TextInput>
                 <Button
                   onClick={handleAddFlop}
                   disabled={
@@ -144,7 +145,7 @@ export const SessionManagerPage: React.FC = () => {
                 </Button>
               </ManagerItem>
               <ManagerItem>
-                <input
+                <TextInput
                   type="text"
                   value={pokerSession.currentHand?.turn ?? turn}
                   onChange={(e) => setTurn(e.target.value)}
@@ -154,7 +155,7 @@ export const SessionManagerPage: React.FC = () => {
                     !pokerSession.currentHand ||
                     !!pokerSession.currentHand?.turn
                   }
-                ></input>
+                ></TextInput>
                 <Button
                   onClick={handleAddTurn}
                   disabled={
@@ -167,7 +168,7 @@ export const SessionManagerPage: React.FC = () => {
                 </Button>
               </ManagerItem>
               <ManagerItem>
-                <input
+                <TextInput
                   type="text"
                   value={pokerSession.currentHand?.river ?? river}
                   onChange={(e) => setRiver(e.target.value)}
@@ -177,7 +178,7 @@ export const SessionManagerPage: React.FC = () => {
                     !pokerSession.currentHand ||
                     !!pokerSession.currentHand?.river
                   }
-                ></input>
+                ></TextInput>
                 <Button
                   onClick={handleAddRiver}
                   disabled={

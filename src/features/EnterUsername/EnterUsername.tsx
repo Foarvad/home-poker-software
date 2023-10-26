@@ -1,7 +1,8 @@
 import { useState } from "react";
 
 import { Button } from "../../components/Button";
-import { Main } from "../../components/Layout";
+import { CenterWrapper } from "../../components/Layout";
+import { TextInput } from "../../components/TextInput";
 
 type EnterUsernameProps = {
   setUsername: (username: string) => void;
@@ -21,13 +22,14 @@ export const EnterUsername: React.FC<EnterUsernameProps> = ({
   };
 
   return (
-    <Main>
-      <input
+    <CenterWrapper>
+      <TextInput
+        label="Your name"
         type="text"
         value={username}
         onChange={(e) => setUsernameState(e.target.value)}
-      ></input>
+      ></TextInput>
       <Button onClick={handleSubmit}>Join session</Button>
-    </Main>
+    </CenterWrapper>
   );
 };
