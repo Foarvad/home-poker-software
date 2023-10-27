@@ -214,4 +214,31 @@ export class HoldemGateway implements OnGatewayConnection {
       this.server.emit('error', error.message);
     }
   }
+
+  @SubscribeMessage('nextLevel')
+  async nextLevel(@MessageBody() { sessionId }: { sessionId: string }) {
+    try {
+      await this.holdemService.nextLevel(sessionId);
+
+      await this.broadcastSession(sessionId, ['players', 'managers']);
+
+      return 'Next level started';
+    } catch (error) {
+      this.server.emit('error', error.message);
+    }
+  }
+
+  @SubscribeMessage('previousLevel')
+  async previousLevel(@MessageBody() { sessionId }: { sessionId: string }) {
+    try {
+      await this.holdemService.previousLevel(sessionId);
+
+      await this.broadcastSession(sessionId, ['players', 'managers']);
+
+      return 'Level set to previous';
+    } catch (error) {
+      this.server.emit('error', error.message);
+    }
+  }
 }
+

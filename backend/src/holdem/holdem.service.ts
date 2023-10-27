@@ -97,6 +97,7 @@ export class HoldemService {
       // Create first hand
       const firstHand = manager.create(HoldemHand, {
         number: 1,
+        level: 1,
         session,
       });
 
@@ -106,6 +107,7 @@ export class HoldemService {
       // Update session
       await manager.getRepository(HoldemSession).update(session.id, {
         currentHand: firstHand,
+        currentLevel: 1,
         status: HoldemSessionStatus.ACTIVE,
         startedAt: new Date(),
       });
@@ -124,6 +126,7 @@ export class HoldemService {
 
     await this.sessionsRepository.update(session.id, {
       currentHand: null,
+      currentLevel: null,
       status: HoldemSessionStatus.ENDED,
       endedAt: new Date(),
     });
@@ -146,12 +149,21 @@ export class HoldemService {
       );
     }
 
+    if (!session.currentLevel) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_CURRENT_LEVEL,
+        'Session is active, but current level is null.',
+      );
+    }
+
     const nextHandNumber = session.currentHand.number + 1;
+    const currentLevel = session.currentLevel;
 
     await this.dataSource.transaction(async (manager) => {
       // Create new hand
       const newHand = manager.create(HoldemHand, {
         number: nextHandNumber,
+        level: currentLevel,
         session,
       });
 
@@ -228,5 +240,35 @@ export class HoldemService {
     }
 
     await this.handsRepository.update(currentHand.id, { river });
+  }
+
+  async nextLevel(sessionId: string) {
+    const session = await this.findSessionById(sessionId);
+
+    if (!session.currentLevel) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_CURRENT_LEVEL,
+        'Current level is null.',
+      );
+    }
+
+    const nextLevel = Math.min(session.currentLevel + 1, 16);
+
+    await this.sessionsRepository.update(session.id, { currentLevel: nextLevel });
+  }
+
+  async previousLevel(sessionId: string) {
+    const session = await this.findSessionById(sessionId);
+
+    if (!session.currentLevel) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.NO_CURRENT_LEVEL,
+        'Current level is null.',
+      );
+    }
+
+    const previousLevel = Math.max(session.currentLevel - 1, 1);
+
+    await this.sessionsRepository.update(session.id, { currentLevel: previousLevel });
   }
 }
