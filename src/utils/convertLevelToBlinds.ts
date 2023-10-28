@@ -1,4 +1,6 @@
-export const blindLevels = [
+import { HoldemPokerHand, HoldemPokerSession } from "../types";
+
+const blindLevels = [
   {
     level: 1,
     durationMin: 15,
@@ -96,3 +98,16 @@ export const blindLevels = [
     bigBlind: 10000,
   },
 ]
+
+export const convertLevelToBlinds = (level: number | null): string => {
+  const levelInfo = blindLevels.find((blindLevel) => blindLevel.level === level);
+
+  return levelInfo ? `${levelInfo.smallBlind}/${levelInfo.bigBlind}` : 'N/A';
+}
+
+export const renderBlindsFromSessionHand = (pokerSessionHand: HoldemPokerHand | null) => {
+  return pokerSessionHand ?
+    `Blinds: ${convertLevelToBlinds(
+      pokerSessionHand.level
+    )}` : null
+}

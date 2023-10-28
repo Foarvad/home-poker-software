@@ -26,7 +26,7 @@ export class HoldemHand {
   @Column({ type: 'char', length: 2, nullable: true })
   river: string | null; // Jh
 
-  @Column({ type: 'text' })
+  @Column({ type: 'smallint' })
   level: number;
 
   @OneToMany(() => HoldemPlayerHand, (playerHand) => playerHand.hand)

@@ -8,10 +8,11 @@ import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession, HoldemSessionStatus } from "../types";
 import { SessionStatus } from "../components/SessionStatus";
 import { TextInput } from "../components/TextInput";
+import { convertLevelToBlinds } from "../utils/convertLevelToBlinds";
 
 const ManagerLayout = styled("div", {
   display: "grid",
-  gridTemplateColumns: "repeat(2, 1fr)",
+  gridTemplateColumns: "repeat(3, 1fr)",
   gridColumnGap: "32px",
   gridRowGap: "24px",
 });
@@ -21,6 +22,8 @@ const ManagerItem = styled("div", {
   flexDirection: "column",
   gap: "12px",
   padding: "16px",
+  justifyContent: "center",
+  alignItems: "center",
 });
 
 const NextHandButton = styled(Button, {
@@ -29,6 +32,14 @@ const NextHandButton = styled(Button, {
 
 const SessionStatusWrapper = styled("div", {
   marginBottom: "24px",
+});
+
+const LevelControlWrapper = styled("div", {
+  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: "12px",
 });
 
 export const SessionManagerPage: React.FC = () => {
@@ -84,6 +95,14 @@ export const SessionManagerPage: React.FC = () => {
     socket.emit("endSession", { sessionId });
   };
 
+  const handlePreviousLevel = () => {
+    socket.emit("previousLevel", { sessionId });
+  };
+
+  const handleNextLevel = () => {
+    socket.emit("nextLevel", { sessionId });
+  };
+
   const renderPlayerHands = (pokerSession: HoldemPokerSession) => {
     if (!pokerSession.currentHand) {
       return "No active hand at the moment";
@@ -112,7 +131,7 @@ export const SessionManagerPage: React.FC = () => {
               <SessionStatus pokerSession={pokerSession} />
             </SessionStatusWrapper>
             <ManagerLayout>
-              <ManagerItem style={{ gridColumn: "span 2" }}>
+              <ManagerItem style={{ gridColumn: "span 3" }}>
                 <div>Player hands:</div>
                 <div>{renderPlayerHands(pokerSession)}</div>
               </ManagerItem>
@@ -120,11 +139,38 @@ export const SessionManagerPage: React.FC = () => {
                 <NextHandButton
                   variant="positive"
                   onClick={handleNextHand}
+                  fullWidth
                   disabled={!pokerSession.currentHand}
                 >
                   Next hand
                 </NextHandButton>
               </ManagerItem>
+              <ManagerItem>
+                <LevelControlWrapper>
+                  <Button
+                    evenPaddings
+                    onClick={handlePreviousLevel}
+                    disabled={
+                      pokerSession.status !== HoldemSessionStatus.ACTIVE
+                    }
+                  >
+                    {"<"}
+                  </Button>
+                  {`Level ${pokerSession.currentLevel ?? 0}`}
+                  <Button
+                    evenPaddings
+                    onClick={handleNextLevel}
+                    disabled={
+                      pokerSession.status !== HoldemSessionStatus.ACTIVE
+                    }
+                  >
+                    {">"}
+                  </Button>
+                </LevelControlWrapper>
+              </ManagerItem>
+              <ManagerItem>{`Blinds: ${convertLevelToBlinds(
+                pokerSession.currentLevel
+              )}`}</ManagerItem>
               <ManagerItem>
                 <TextInput
                   type="text"
@@ -139,6 +185,7 @@ export const SessionManagerPage: React.FC = () => {
                 ></TextInput>
                 <Button
                   onClick={handleAddFlop}
+                  fullWidth
                   disabled={
                     flop.length !== 6 ||
                     !pokerSession.currentHand ||
@@ -162,6 +209,7 @@ export const SessionManagerPage: React.FC = () => {
                 ></TextInput>
                 <Button
                   onClick={handleAddTurn}
+                  fullWidth
                   disabled={
                     turn.length !== 2 ||
                     !pokerSession.currentHand ||
@@ -185,6 +233,7 @@ export const SessionManagerPage: React.FC = () => {
                 ></TextInput>
                 <Button
                   onClick={handleAddRiver}
+                  fullWidth
                   disabled={
                     river.length !== 2 ||
                     !pokerSession.currentHand ||
@@ -194,9 +243,11 @@ export const SessionManagerPage: React.FC = () => {
                   Add river
                 </Button>
               </ManagerItem>
+              <ManagerItem></ManagerItem>
               <ManagerItem>
                 <Button
                   onClick={handleStartSession}
+                  fullWidth
                   disabled={
                     pokerSession.status !== HoldemSessionStatus.NOT_STARTED
                   }
@@ -208,6 +259,7 @@ export const SessionManagerPage: React.FC = () => {
                 <Button
                   variant="critical"
                   onClick={handleEndSession}
+                  fullWidth
                   disabled={pokerSession.status !== HoldemSessionStatus.ACTIVE}
                 >
                   End session

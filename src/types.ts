@@ -15,6 +15,7 @@ export type HoldemPokerSession = {
   id: string;
   name: string;
   status: HoldemSessionStatus;
+  currentLevel: number | null;
   currentHand: HoldemPokerHand | null;
   hands: HoldemPokerHand[];
 };
@@ -27,6 +28,7 @@ export type HoldemPokerHand = {
   flop: string;
   turn: string;
   river: string;
+  level: number;
   playerHands: HoldemPlayerHand[];
 };
 

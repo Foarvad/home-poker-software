@@ -23,7 +23,7 @@ export class HoldemSession {
   @Column({ type: 'enum', enum: HoldemSessionStatus, default: HoldemSessionStatus.NOT_STARTED })
   status: HoldemSessionStatus;
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: 'smallint', nullable: true })
   currentLevel: number | null;
 
   @OneToOne(() => HoldemHand, { nullable: true })

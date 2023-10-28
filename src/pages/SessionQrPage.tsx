@@ -12,7 +12,7 @@ export const SessionQrPage: React.FC = () => {
       <Header />
       <Main>
         <CenterWrapper>
-          <QRCode value={`http://192.168.0.109:4173/sessions/${sessionId}`} />
+          <QRCode value={`http://192.168.1.39:3000/sessions/${sessionId}`} />
         </CenterWrapper>
       </Main>
     </Layout>

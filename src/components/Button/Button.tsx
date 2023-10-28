@@ -35,6 +35,11 @@ export const Button = styled('button', {
       true: {
         width: '100%',
       }
+    },
+    evenPaddings: {
+      true: {
+        padding: '12px',
+      }
     }
   },
   '&:hover': {

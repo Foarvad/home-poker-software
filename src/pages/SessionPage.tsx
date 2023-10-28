@@ -9,6 +9,10 @@ import { HandSelector } from "../features/HandSelector";
 import { useAppConfig } from "../providers/AppConfigProvider";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession } from "../types";
+import {
+  convertLevelToBlinds,
+  renderBlindsFromSessionHand,
+} from "../utils/convertLevelToBlinds";
 
 type SessionPageContentProps = {
   sessionId: string;
@@ -67,13 +71,18 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
       .map(({ playerName }) => playerName)
       .includes(username)
   ) {
-    return <HandSelector handSize={2} onSelect={handleSubmitHand} />;
+    return (
+      <>
+        <HandSelector handSize={2} onSelect={handleSubmitHand} />
+        {renderBlindsFromSessionHand(pokerSession.currentHand)}
+      </>
+    );
   }
 
   return (
     <CenterWrapper>
       <SessionStatus pokerSession={pokerSession} />
-      Blinds: 150/300
+      {renderBlindsFromSessionHand(pokerSession.currentHand)}
     </CenterWrapper>
   );
 };
