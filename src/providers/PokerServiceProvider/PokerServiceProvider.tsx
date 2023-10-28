@@ -7,8 +7,6 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 
-import { HoldemPokerSession } from "../../types";
-
 interface PokerServiceContextValue {
   socket: Socket;
 }

@@ -5,6 +5,7 @@ import { Button } from "../../components/Button";
 import { CardImage } from "../../components/CardImage/CardImage";
 import { CardSelector } from "../../components/CardSelector";
 import { ALL_CARD_SUITS_ORDERED_2X2 } from "../../constants";
+import { useAppConfig } from "../../providers/AppConfigProvider";
 import { HoldemPlayerHand, PlayingCard } from "../../types";
 
 const StyledWrapper = styled("div", {
@@ -36,6 +37,15 @@ const CardPreviewWrapper = styled("div", {
   placeItems: "center",
   gap: "4px",
   height: "40%",
+
+  variants: {
+    sneaky: {
+      true: {
+        opacity: 0.05,
+        filter: "grayscale(1)",
+      },
+    },
+  },
 });
 
 type HandSelectorProps = {
@@ -50,6 +60,8 @@ export const HandSelector: React.FC<HandSelectorProps> = ({
 }) => {
   const [firstCard, setFirstCard] = useState<PlayingCard | null>(null);
   const [secondCard, setSecondCard] = useState<PlayingCard | null>(null);
+
+  const { isSneakyCardPreview } = useAppConfig();
 
   const handleSelectCard = (card: PlayingCard) => {
     if (!firstCard) {
@@ -76,7 +88,7 @@ export const HandSelector: React.FC<HandSelectorProps> = ({
 
   return (
     <StyledWrapper>
-      <CardPreviewWrapper>
+      <CardPreviewWrapper sneaky={isSneakyCardPreview}>
         <CardPreview
           style={{ justifyContent: "flex-end" }}
           onClick={() => setFirstCard(null)}

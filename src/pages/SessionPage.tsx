@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { Button } from "../components/Button";
 
 import { Layout, Header, Main, CenterWrapper } from "../components/Layout";
 import { SessionStatus } from "../components/SessionStatus";
 import { EnterUsername } from "../features/EnterUsername";
 import { HandSelector } from "../features/HandSelector";
+import { useAppConfig } from "../providers/AppConfigProvider";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession } from "../types";
 
@@ -79,9 +81,15 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
 export const SessionPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
 
+  const { toggleSneakyCardPreview } = useAppConfig();
+
   return (
     <Layout>
-      <Header />
+      <Header>
+        <Button onClick={toggleSneakyCardPreview}>
+          Toggle card visibility
+        </Button>
+      </Header>
       <Main>
         {sessionId ? (
           <SessionPageContent sessionId={sessionId} />

@@ -5,11 +5,14 @@ import { App } from "./App";
 import { PokerServiceProvider } from "./providers/PokerServiceProvider";
 
 import "./index.css";
+import { AppConfigProvider } from "./providers/AppConfigProvider";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <PokerServiceProvider>
-      <App />
-    </PokerServiceProvider>
+    <AppConfigProvider>
+      <PokerServiceProvider>
+        <App />
+      </PokerServiceProvider>
+    </AppConfigProvider>
   </React.StrictMode>
 );
