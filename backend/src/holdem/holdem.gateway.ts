@@ -83,6 +83,17 @@ export class HoldemGateway implements OnGatewayConnection {
     }
   }
 
+  @SubscribeMessage('leaveSessionAsManager')
+  async leaveSessionAsManager(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
+    try {
+      await client.leave(`${sessionId}-manager`);
+
+      return 'Session leaved';
+    } catch (error) {
+      client.emit('error', error.message);
+    }
+  }
+
   @SubscribeMessage('joinSession')
   async joinSession(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
     try {
@@ -95,7 +106,7 @@ export class HoldemGateway implements OnGatewayConnection {
   }
 
   @SubscribeMessage('leaveSession')
-  async leaveRoom(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
+  async leaveSession(@ConnectedSocket() client: Socket, @MessageBody() { sessionId }: { sessionId: string }) {
     try {
       await client.leave(sessionId);
 

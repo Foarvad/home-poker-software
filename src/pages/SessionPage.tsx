@@ -9,10 +9,7 @@ import { HandSelector } from "../features/HandSelector";
 import { useAppConfig } from "../providers/AppConfigProvider";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { HoldemPokerSession } from "../types";
-import {
-  convertLevelToBlinds,
-  renderBlindsFromSessionHand,
-} from "../utils/convertLevelToBlinds";
+import { renderBlindsFromSessionHand } from "../utils/convertLevelToBlinds";
 
 type SessionPageContentProps = {
   sessionId: string;
@@ -41,6 +38,7 @@ const SessionPageContent: React.FC<SessionPageContentProps> = ({
 
     return () => {
       socket.removeAllListeners("session");
+      socket.emit("leaveSession", { sessionId });
     };
   }, [socket, sessionId]);
 

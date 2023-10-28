@@ -65,6 +65,7 @@ export const SessionManagerPage: React.FC = () => {
 
     return () => {
       socket.removeAllListeners("session");
+      socket.emit("leaveSessionAsManager", { sessionId });
     };
   }, [socket, sessionId]);
 
