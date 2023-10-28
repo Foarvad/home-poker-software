@@ -7,6 +7,7 @@ type SessionStatusProps = {
 };
 
 const Wrapper = styled("div", {
+  textAlign: 'center',
   fontSize: "48px",
 });
 
