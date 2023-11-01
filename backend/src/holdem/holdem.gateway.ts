@@ -55,6 +55,16 @@ export class HoldemGateway implements OnGatewayConnection {
     }
   }
 
+  @SubscribeMessage('getPlayerHands')
+  async getPlayerHands(client: Socket, { sessionId, handNumber }: { sessionId: string, handNumber: number }) {
+    try {
+      const playerHands = await this.holdemService.getPlayerHandsByHandNumber(sessionId, handNumber);
+      return playerHands;
+    } catch (error) {
+      client.emit('error', error.message);
+    }
+  }
+
   @SubscribeMessage('createSession')
   async createSession(
     @MessageBody() dto: CreateSessionDto,

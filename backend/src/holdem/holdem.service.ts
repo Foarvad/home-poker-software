@@ -29,7 +29,7 @@ export class HoldemService {
     private readonly handsRepository: Repository<HoldemHand>,
     @InjectRepository(HoldemPlayerHand)
     private readonly playerHandsRepository: Repository<HoldemPlayerHand>,
-  ) {}
+  ) { }
 
   // Helpers
 
@@ -49,6 +49,22 @@ export class HoldemService {
     return session;
   }
 
+  private async findHandByNumber(sessionId: string, handNumber: number) {
+    const hand = await this.handsRepository.findOne({
+      relations: ['playerHands'],
+      where: { session: { id: sessionId }, number: handNumber }
+    })
+
+    if (!hand) {
+      throw new HoldemServiceError(
+        HoldemServiceErrorType.HAND_NOT_FOUND,
+        'Hand not found.',
+      );
+    }
+
+    return hand;
+  }
+
   private async findCurrentHandBySessionId(sessionId: string) {
     const session = await this.findSessionById(sessionId);
 
@@ -65,7 +81,8 @@ export class HoldemService {
   // Main methods
 
   async getSessions(): Promise<HoldemSession[]> {
-    return this.sessionsRepository.findBy({ status: Not(HoldemSessionStatus.ENDED) });
+    // return this.sessionsRepository.findBy({ status: Not(HoldemSessionStatus.ENDED) });
+    return this.sessionsRepository.find();
   }
 
   async getSessionById(sessionId: string): Promise<HoldemSession> {
@@ -270,5 +287,11 @@ export class HoldemService {
     const previousLevel = Math.max(session.currentLevel - 1, 1);
 
     await this.sessionsRepository.update(session.id, { currentLevel: previousLevel });
+  }
+
+  async getPlayerHandsByHandNumber(sessionId: string, handNumber: number) {
+    const hand = await this.findHandByNumber(sessionId, handNumber);
+
+    return hand.playerHands;
   }
 }
