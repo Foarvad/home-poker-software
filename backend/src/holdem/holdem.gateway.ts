@@ -55,11 +55,11 @@ export class HoldemGateway implements OnGatewayConnection {
     }
   }
 
-  @SubscribeMessage('getPlayerHands')
+  @SubscribeMessage('getHandByNumber')
   async getPlayerHands(client: Socket, { sessionId, handNumber }: { sessionId: string, handNumber: number }) {
     try {
-      const playerHands = await this.holdemService.getPlayerHandsByHandNumber(sessionId, handNumber);
-      return playerHands;
+      const hand = await this.holdemService.getHandByNumber(sessionId, handNumber);
+      return hand;
     } catch (error) {
       client.emit('error', error.message);
     }

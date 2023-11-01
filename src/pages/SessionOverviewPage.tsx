@@ -5,7 +5,11 @@ import { Layout, Header, Main, CenterWrapper } from "../components/Layout";
 import { Button } from "../components/Button";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { TextInput } from "../components/TextInput";
-import { HoldemPlayerHand, HoldemPokerSession } from "../types";
+import {
+  HoldemPlayerHand,
+  HoldemPokerHand,
+  HoldemPokerSession,
+} from "../types";
 import { styled } from "../stitches.config";
 import { CardImage } from "../components/CardImage/CardImage";
 import { parseCards } from "../utils/parseCards";
@@ -14,7 +18,7 @@ const PlayerHandsWrapper = styled("div", {
   display: "flex",
   justifyContent: "center",
   gap: "32px",
-  height: '150px',
+  height: "150px",
 });
 
 const PlayerHandWrapper = styled("div", {
@@ -43,9 +47,7 @@ export const SessionOverviewPage: React.FC = () => {
   const [pokerSession, setPokerSession] = useState<HoldemPokerSession | null>(
     null
   );
-  const [playerHands, setPlayerHands] = useState<HoldemPlayerHand[] | null>(
-    null
-  );
+  const [pokerHand, setPokerHand] = useState<HoldemPokerHand | null>(null);
 
   useEffect(() => {
     socket.emit("getSession", { sessionId });
@@ -61,10 +63,10 @@ export const SessionOverviewPage: React.FC = () => {
 
   const handleGetHands = () => {
     socket.emit(
-      "getPlayerHands",
+      "getHandByNumber",
       { sessionId, handNumber: Number(handNumber) },
-      (response: HoldemPlayerHand[]) => {
-        setPlayerHands(response);
+      (response: HoldemPokerHand) => {
+        setPokerHand(response);
       }
     );
   };
@@ -74,7 +76,7 @@ export const SessionOverviewPage: React.FC = () => {
       <Header>{pokerSession?.name}</Header>
       <Main>
         <PlayerHandsWrapper>
-          {playerHands?.map(({ id, playerHand, playerName }) => {
+          {pokerHand?.playerHands?.map(({ id, playerHand, playerName }) => {
             const parsedPlayerCards = parseCards(playerHand);
 
             return (
@@ -82,11 +84,10 @@ export const SessionOverviewPage: React.FC = () => {
                 {playerName}
                 <PlayerHandCardsWrapper>
                   {parsedPlayerCards.map((parsedPlayerCard) => (
-                    <PlayerHandCardWrapper>
-                      <CardImage
-                        card={parsedPlayerCard}
-                        key={`${parsedPlayerCard.rank}${parsedPlayerCard.suit}`}
-                      />
+                    <PlayerHandCardWrapper
+                      key={`${parsedPlayerCard.rank}${parsedPlayerCard.suit}`}
+                    >
+                      <CardImage card={parsedPlayerCard} />
                     </PlayerHandCardWrapper>
                   ))}
                 </PlayerHandCardsWrapper>

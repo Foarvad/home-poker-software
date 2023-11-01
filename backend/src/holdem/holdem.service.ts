@@ -289,9 +289,9 @@ export class HoldemService {
     await this.sessionsRepository.update(session.id, { currentLevel: previousLevel });
   }
 
-  async getPlayerHandsByHandNumber(sessionId: string, handNumber: number) {
+  async getHandByNumber(sessionId: string, handNumber: number) {
     const hand = await this.findHandByNumber(sessionId, handNumber);
 
-    return hand.playerHands;
+    return hand;
   }
 }
