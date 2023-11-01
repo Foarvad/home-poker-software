@@ -1,12 +1,12 @@
 import { styled } from "@stitches/react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "../../components/Button";
 
 import { CardImage } from "../../components/CardImage/CardImage";
 import { CardSelector } from "../../components/CardSelector";
 import { ALL_CARD_SUITS_ORDERED_2X2 } from "../../constants";
 import { useAppConfig } from "../../providers/AppConfigProvider";
-import { HoldemPlayerHand, PlayingCard } from "../../types";
+import { PlayingCard } from "../../types";
 
 const StyledWrapper = styled("div", {
   display: "flex",

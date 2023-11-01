@@ -6,6 +6,32 @@ import { Button } from "../components/Button";
 import { usePokerService } from "../providers/PokerServiceProvider";
 import { TextInput } from "../components/TextInput";
 import { HoldemPlayerHand, HoldemPokerSession } from "../types";
+import { styled } from "../stitches.config";
+import { CardImage } from "../components/CardImage/CardImage";
+import { parseCards } from "../utils/parseCards";
+
+const PlayerHandsWrapper = styled("div", {
+  display: "flex",
+  justifyContent: "center",
+  gap: "32px",
+  height: '150px',
+});
+
+const PlayerHandWrapper = styled("div", {
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "8px",
+});
+
+const PlayerHandCardsWrapper = styled("div", {
+  display: "flex",
+  gap: "4px",
+});
+
+const PlayerHandCardWrapper = styled("div", {
+  width: "50px",
+});
 
 export const SessionOverviewPage: React.FC = () => {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -15,6 +41,9 @@ export const SessionOverviewPage: React.FC = () => {
   const { socket } = usePokerService();
 
   const [pokerSession, setPokerSession] = useState<HoldemPokerSession | null>(
+    null
+  );
+  const [playerHands, setPlayerHands] = useState<HoldemPlayerHand[] | null>(
     null
   );
 
@@ -34,8 +63,8 @@ export const SessionOverviewPage: React.FC = () => {
     socket.emit(
       "getPlayerHands",
       { sessionId, handNumber: Number(handNumber) },
-      (playerHands: HoldemPlayerHand[]) => {
-        console.log(playerHands);
+      (response: HoldemPlayerHand[]) => {
+        setPlayerHands(response);
       }
     );
   };
@@ -44,6 +73,27 @@ export const SessionOverviewPage: React.FC = () => {
     <Layout>
       <Header>{pokerSession?.name}</Header>
       <Main>
+        <PlayerHandsWrapper>
+          {playerHands?.map(({ id, playerHand, playerName }) => {
+            const parsedPlayerCards = parseCards(playerHand);
+
+            return (
+              <PlayerHandWrapper key={id}>
+                {playerName}
+                <PlayerHandCardsWrapper>
+                  {parsedPlayerCards.map((parsedPlayerCard) => (
+                    <PlayerHandCardWrapper>
+                      <CardImage
+                        card={parsedPlayerCard}
+                        key={`${parsedPlayerCard.rank}${parsedPlayerCard.suit}`}
+                      />
+                    </PlayerHandCardWrapper>
+                  ))}
+                </PlayerHandCardsWrapper>
+              </PlayerHandWrapper>
+            );
+          })}
+        </PlayerHandsWrapper>
         <CenterWrapper>
           <TextInput
             label="Hand number"

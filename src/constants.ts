@@ -1,4 +1,7 @@
-import { PlayingCardSuit } from "./types";
+import { PlayingCardRank, PlayingCardSuit } from "./types";
+
+export const CARD_RANKS = Object.values(PlayingCardRank);
+export const CARD_SUITS = Object.values(PlayingCardSuit);
 
 // https://www.deceptionary.com/aboutsuits.html
 

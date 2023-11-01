@@ -1,5 +1,6 @@
 import { styled } from "@stitches/react"
 import { useMemo, useState } from "react";
+import { CARD_RANKS } from "../../constants";
 import { PlayingCardRank, PlayingCardSuit, PlayingCard } from "../../types";
 import { PieMenu } from "../PieMenu";
 
@@ -18,9 +19,7 @@ const StyledButton = styled('button', {
   aspectRatio: '1 / 1',
 })
 
-const cards: PlayingCardRank[] = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'];
-
-const cardOptions = cards.map((card) => ({ label: card !== 'T' ? card : '10', value: card }));
+const cardOptions = CARD_RANKS.map((card) => ({ label: card !== 'T' ? card : '10', value: card }));
 
 export const CardSelector: React.FC<CardSelectorProps> = ({ suit, disabled, disabledCards, onSelect }) => {
   const [isMenuOpened, setMenuOpened] = useState(false);
